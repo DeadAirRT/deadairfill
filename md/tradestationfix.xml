@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mdscript name="DeadAirTradeStationFix" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="md.xsd">
+	<cues>
+		<cue name="Init">
+			<actions>
+				<set_value name="$OwnerList" exact="[faction.antigone, faction.argon, faction.hatikvah, faction.holyorder, faction.paranid, faction.teladi]" />
+			</actions>
+			<cues>
+				<cue name="FindTradeStations" instantiate="true">
+					<conditions>
+						<event_game_loaded />
+					</conditions>
+					<actions>
+						<find_station groupname="$TradeStations" append="true" multiple="true" space="player.galaxy" functional="true" tradestation="true">
+							<match owner="faction.player" negate="true" />
+						</find_station>
+						<find_station groupname="$TradeStations" append="true" multiple="true" space="player.galaxy" functional="true">
+							<match_any>
+								<match macro="macro.station_arg_tradestation_base_01_macro"/>
+								<match macro="macro.station_par_tradestation_base_01_macro"/>
+								<match macro="macro.station_tel_tradestation_base_01_macro"/>
+								<match macro="macro.station_arg_tradestation_dabase_01_macro"/>
+								<match macro="macro.station_par_tradestation_dabase_01_macro"/>
+								<match macro="macro.station_tel_tradestation_dabase_01_macro"/>
+								<match macro="macro.landmarks_tel_tradestation_01_macro"/>
+								<match macro="macro.landmarks_par_tradestation_01_macro"/>
+							</match_any>
+						</find_station>
+						<do_all exact="$TradeStations.count" counter="$a">
+							<set_value name="$TradeStation" exact="$TradeStations.{$a}" />
+							<debug_to_file name="'TradestationFix'" directory="'DeadAir_Fill'" text="'%1, %2, %3'.[$TradeStation.trueowner, $TradeStation.sector.name, $TradeStation.knownname]" output="false" append="true" />
+							<include_actions ref="FixTradeStations" />
+						</do_all>
+						<remove_value name="$TradeStations" />
+						<remove_value name="$TradeStation" />
+					</actions>
+				</cue>
+				<library name="FixTradeStations">
+					<delay min="5s" max="60s" />
+					<actions>
+						<do_if value="$TradeStation.isoperational">
+							<debug_to_file name="'TradestationFix'" directory="'DeadAir_Fill'" text="'%1, %2, %3, is operational'.[$TradeStation.trueowner, $TradeStation.sector.name, $TradeStation.knownname]" output="false" append="true" />
+							<do_if value="($TradeStation.tradewares.list.count lt 5)">
+								<debug_to_file name="'TradestationFix'" directory="'DeadAir_Fill'" text="'%1, %2, %3, has less than 5 tradewares'.[$TradeStation.trueowner, $TradeStation.sector.name, $TradeStation.knownname]" output="false" append="true" />
+								<do_all exact="$TradeStation.tradewares.list.count" counter="$b" reverse="true">
+									<remove_tradeware object="$TradeStation" ware="$TradeStation.tradewares.list.{$b}" />
+								</do_all>
+								<add_tradeware object="$TradeStation" ware="ware.medicalsupplies" allowbuy="true" allowsell="true" lockavgprice="true" />
+								<add_tradeware object="$TradeStation" ware="ware.water" allowbuy="true" allowsell="true" lockavgprice="true" />
+								<add_tradeware object="$TradeStation" ware="ware.advancedcomposites" allowbuy="true" allowsell="true" lockavgprice="true" />
+								<add_tradeware object="$TradeStation" ware="ware.advancedelectronics" allowbuy="true" allowsell="true" lockavgprice="true" />
+								<add_tradeware object="$TradeStation" ware="ware.antimatterconverters" allowbuy="true" allowsell="true" lockavgprice="true" />
+								<add_tradeware object="$TradeStation" ware="ware.claytronics" allowbuy="true" allowsell="true" lockavgprice="true" />
+								<add_tradeware object="$TradeStation" ware="ware.dronecomponents" allowbuy="true" allowsell="true" lockavgprice="true" />
+								<add_tradeware object="$TradeStation" ware="ware.engineparts" allowbuy="true" allowsell="true" lockavgprice="true" />
+								<add_tradeware object="$TradeStation" ware="ware.fieldcoils" allowbuy="true" allowsell="true" lockavgprice="true" />
+								<add_tradeware object="$TradeStation" ware="ware.hullparts" allowbuy="true" allowsell="true" lockavgprice="true" />
+								<add_tradeware object="$TradeStation" ware="ware.missilecomponents" allowbuy="true" allowsell="true" lockavgprice="true" />
+								<add_tradeware object="$TradeStation" ware="ware.scanningarrays" allowbuy="true" allowsell="true" lockavgprice="true" />
+								<add_tradeware object="$TradeStation" ware="ware.shieldcomponents" allowbuy="true" allowsell="true" lockavgprice="true" />
+								<add_tradeware object="$TradeStation" ware="ware.smartchips" allowbuy="true" allowsell="true" lockavgprice="true" />
+								<add_tradeware object="$TradeStation" ware="ware.turretcomponents" allowbuy="true" allowsell="true" lockavgprice="true" />
+								<add_tradeware object="$TradeStation" ware="ware.weaponcomponents" allowbuy="true" allowsell="true" lockavgprice="true" />
+								
+								<do_if value="($TradeStation.trueowner == faction.teladi)">
+									<add_tradeware object="$TradeStation" ware="ware.nostropoil" allowbuy="true" allowsell="true" lockavgprice="true" />
+									<add_tradeware object="$TradeStation" ware="ware.majadust" allowbuy="true" allowsell="true" lockavgprice="true" />
+									<add_tradeware object="$TradeStation" ware="ware.spacefuel" allowbuy="true" allowsell="true" lockavgprice="true" />
+									<add_tradeware object="$TradeStation" ware="ware.nividium" allowbuy="true" allowsell="false" lockavgprice="false" />
+								</do_if>
+								<do_if value="($TradeStation.trueowner == faction.argon) or ($TradeStation.trueowner == faction.antigone) or ($TradeStation.trueowner == faction.hatikvah)">
+									<add_tradeware object="$TradeStation" ware="ware.foodrations" allowbuy="true" allowsell="true" lockavgprice="true" />
+									<add_tradeware object="$TradeStation" ware="ware.spaceweed" allowbuy="true" allowsell="true" lockavgprice="true" />
+									<add_tradeware object="$TradeStation" ware="ware.majadust" allowbuy="true" allowsell="true" lockavgprice="true" />
+									<add_tradeware object="$TradeStation" ware="ware.nividium" allowbuy="true" allowsell="false" lockavgprice="false" />
+								</do_if>
+								<do_if value="($TradeStation.trueowner == faction.holyorder) or ($TradeStation.trueowner == faction.paranid)">
+									<add_tradeware object="$TradeStation" ware="ware.sojahusk" allowbuy="true" allowsell="true" lockavgprice="true" />
+									<add_tradeware object="$TradeStation" ware="ware.spaceweed" allowbuy="true" allowsell="true" lockavgprice="true" />
+									<add_tradeware object="$TradeStation" ware="ware.spacefuel" allowbuy="true" allowsell="true" lockavgprice="true" />
+								</do_if>
+							</do_if>
+							<debug_to_file name="'TradestationFix'" directory="'DeadAir_Fill'" text="'%1, %2, %3, %4 tradewares'.[$TradeStation.trueowner, $TradeStation.sector.name, $TradeStation.knownname, $TradeStation.tradewares.list.count]" output="false" append="true" />
+						</do_if>
+					</actions>
+				</library>
+			</cues>
+		</cue>
+	</cues>
+</mdscript>
