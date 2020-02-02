@@ -45,7 +45,7 @@
 					</actions>
 				</cue>
 				<library name="ProcessWares">
-					<delay min="5s" max="60s" />
+					<delay min="1s" max="10s" />
 					<actions>
 						<do_if value="$Station.exists">
 						  <set_value name="$_SingleLog_1" exact="0" />
@@ -60,15 +60,15 @@
 								
 								<do_if value="$ware == ware.nividium">
 									<do_if value="$waresAmount gt $maxWaresAmount * 0.90">
-										<set_value name="$removeWaresAmount" min="($waresAmount - ($maxWaresAmount * 0.75))i" max="($waresAmount - ($maxWaresAmount * 0.60))i" />
+										<set_value name="$removeWaresAmount" min="($waresAmount - ($maxWaresAmount * 0.80))i" max="($waresAmount - ($maxWaresAmount * 0.75))i" />
 									</do_if>
 								</do_if>
 								<do_else>
 									<do_if value="$waresAmount gt $maxWaresAmount * 0.90">
-										<set_value name="$removeWaresAmount" min="($waresAmount - ($maxWaresAmount * 0.80))i" max="($waresAmount - ($maxWaresAmount * 0.65))i" />
+										<set_value name="$removeWaresAmount" min="($waresAmount - ($maxWaresAmount * 0.80))i" max="($waresAmount - ($maxWaresAmount * 0.70))i" />
 									</do_if>
-									<do_if value="$waresAmount lt $maxWaresAmount * 0.1">
-										<set_value name="$addWaresAmount" exact="(($maxWaresAmount * 0.125) - $waresAmount)i" />
+									<do_if value="$waresAmount lt $maxWaresAmount * 0.05">
+										<set_value name="$addWaresAmount" exact="(($maxWaresAmount * 0.1) - $waresAmount)i" />
 									</do_if>
 								</do_else>
 								<do_if value="$addWaresAmount gt 0 or $removeWaresAmount gt 0">
@@ -133,6 +133,7 @@
 				</library>
 				
 				<library name="AddShipMod">
+					<delay min="1s" max="10s" />
 					<actions>
 						<set_value name="$Owner" exact="$Station.trueowner" />
 						<set_value name="$BaseMods" exact="[ware.mod_shield_capacity_02_mk3, ware.mod_engine_forwardthrust_01_mk3, ware.mod_ship_mass_01_mk3]" />
