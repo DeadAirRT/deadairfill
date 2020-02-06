@@ -35,17 +35,20 @@
 				</cue>
 				<cue name="ProcessWaresLoop" instantiate="true" checkinterval="15min" checktime="player.age + 90s">
 					<actions>
+						<set_value name="$delayalpha" exact="0s" />
 						<do_if value="$FillStationGroup.count gt 0">
 							<do_all exact="$FillStationGroup.count" counter="$i">
 								<set_value name="$Station" exact="$FillStationGroup.{$i}" />
+								<set_value name="$delayalpha" exact="($delayalpha + 1.0)s" />
 								<include_actions ref="ProcessWares" />
 							</do_all>
 						</do_if>
 						<remove_value name="$Station" />
+						<remove_value name="$delayalpha" />
 					</actions>
 				</cue>
 				<library name="ProcessWares">
-					<delay min="1s" max="10s" />
+					<delay exact="$delayalpha" />
 					<actions>
 						<do_if value="$Station.exists">
 						  <set_value name="$_SingleLog_1" exact="0" />

@@ -11,7 +11,9 @@
 						<event_game_loaded />
 					</conditions>
 					<actions>
-						<find_station groupname="$TradeStations" append="true" multiple="true" space="player.galaxy" functional="true" tradestation="true">
+						<set_value name="$delayalpha" exact="0s" />
+						<set_value name="$delaybravo" exact="0s" />
+						<find_station groupname="$TradeStations" append="true" multiple="true" space="player.galaxy" functional="true" tradestation="true" shipyard="false" wharf="false" canequipships="false">
 							<match owner="faction.player" negate="true" />
 						</find_station>
 						<find_station groupname="$TradeStations" append="true" multiple="true" space="player.galaxy" functional="true">
@@ -29,17 +31,50 @@
 						<do_all exact="$TradeStations.count" counter="$a">
 							<set_value name="$TradeStation" exact="$TradeStations.{$a}" />
 							<debug_to_file name="'TradestationFix'" directory="'DeadAir_Fill'" text="'%1, %2, %3'.[$TradeStation.trueowner, $TradeStation.sector.name, $TradeStation.knownname]" output="false" append="true" />
+							<set_value name="$delayalpha" exact="($delayalpha + 0.5)s" />
 							<include_actions ref="FixTradeStations" />
 						</do_all>
 						<remove_value name="$TradeStations" />
 						<remove_value name="$TradeStation" />
+						<set_value name="$delayalpha" exact="0" />
+						<find_station groupname="$ShipyardWharfs" append="true" multiple="true" space="player.galaxy" functional="true" shipyard="true">
+							<match owner="faction.player" negate="true" />
+						</find_station>
+						<find_station groupname="$ShipyardWharfs" append="true" multiple="true" space="player.galaxy" functional="true" wharf="true">
+							<match owner="faction.player" negate="true" />
+						</find_station>
+						<find_station groupname="$ShipyardWharfs" append="true" multiple="true" space="player.galaxy" functional="true" canequipships="true">
+							<match_content class="class.buildmodule" />
+							<match owner="faction.player" negate="true" />
+						</find_station>
+						<find_station groupname="$ShipyardWharfs" append="true" multiple="true" space="player.galaxy" functional="true">
+							<match_any>
+								<match macro="macro.station_arg_shipyard_dabase_01_macro"/>
+								<match macro="macro.station_arg_wharf_dabase_01_macro"/>
+								<match macro="macro.station_par_shipyard_dabase_01_macro"/>
+								<match macro="macro.station_par_wharf_dabase_01_macro"/>
+								<match macro="macro.station_tel_shipyard_dabase_01_macro"/>
+								<match macro="macro.station_tel_wharf_dabase_01_macro"/>
+							</match_any>
+							<match_content class="class.buildmodule" />
+							<match owner="faction.player" negate="true" />
+						</find_station>
+						<do_all exact="$ShipyardWharfs.count" counter="$a">
+							<set_value name="$ShipyardWharf" exact="$ShipyardWharfs.{$a}" />
+							<debug_to_file name="'TradestationFix'" directory="'DeadAir_Fill'" text="'%1, %2, %3'.[$ShipyardWharf.trueowner, $ShipyardWharf.sector.name, $ShipyardWharf.knownname]" output="false" append="true" />
+							<set_value name="$delaybravo" exact="($delaybravo + 0.5)s" />
+							<include_actions ref="FixShipyardWharfs" />
+						</do_all>
+						<remove_value name="$ShipyardWharfs" />
+						<remove_value name="$ShipyardWharf" />
+						<set_value name="$delaybravo" exact="0" />
 					</actions>
 				</cue>
 				<library name="FixTradeStations">
-					<delay min="5s" max="60s" />
+					<delay exact="$delayalpha" />
 					<actions>
 						<do_if value="$TradeStation.isoperational">
-							<debug_to_file name="'TradestationFix'" directory="'DeadAir_Fill'" text="'%1, %2, %3, is operational'.[$TradeStation.trueowner, $TradeStation.sector.name, $TradeStation.knownname]" output="false" append="true" />
+							<debug_to_file name="'TradestationFix'" directory="'DeadAir_Fill'" text="'%1, %2, %3 is operational. %4'.[$TradeStation.trueowner, $TradeStation.sector.name, $TradeStation.knownname, $delayalpha]" output="false" append="true" />
 							<do_if value="($TradeStation.tradewares.list.count lt 5)">
 								<debug_to_file name="'TradestationFix'" directory="'DeadAir_Fill'" text="'%1, %2, %3, has less than 5 tradewares'.[$TradeStation.trueowner, $TradeStation.sector.name, $TradeStation.knownname]" output="false" append="true" />
 								<do_all exact="$TradeStation.tradewares.list.count" counter="$b" reverse="true">
@@ -62,7 +97,7 @@
 								<add_tradeware object="$TradeStation" ware="ware.turretcomponents" allowbuy="true" allowsell="true" lockavgprice="true" />
 								<add_tradeware object="$TradeStation" ware="ware.weaponcomponents" allowbuy="true" allowsell="true" lockavgprice="true" />
 								
-								<do_if value="($TradeStation.trueowner == faction.teladi)">
+								<do_if value="($TradeStation.trueowner == faction.teladi) or ($TradeStation.trueowner == faction.ministry) or ($TradeStation.trueowner == faction.scaleplate)">
 									<add_tradeware object="$TradeStation" ware="ware.nostropoil" allowbuy="true" allowsell="true" lockavgprice="true" />
 									<add_tradeware object="$TradeStation" ware="ware.majadust" allowbuy="true" allowsell="true" lockavgprice="true" />
 									<add_tradeware object="$TradeStation" ware="ware.spacefuel" allowbuy="true" allowsell="true" lockavgprice="true" />
@@ -74,13 +109,28 @@
 									<add_tradeware object="$TradeStation" ware="ware.majadust" allowbuy="true" allowsell="true" lockavgprice="true" />
 									<add_tradeware object="$TradeStation" ware="ware.nividium" allowbuy="true" allowsell="false" lockavgprice="false" />
 								</do_if>
-								<do_if value="($TradeStation.trueowner == faction.holyorder) or ($TradeStation.trueowner == faction.paranid)">
+								<do_if value="($TradeStation.trueowner == faction.holyorder) or ($TradeStation.trueowner == faction.paranid) or ($TradeStation.trueowner == faction.alliance)">
 									<add_tradeware object="$TradeStation" ware="ware.sojahusk" allowbuy="true" allowsell="true" lockavgprice="true" />
 									<add_tradeware object="$TradeStation" ware="ware.spaceweed" allowbuy="true" allowsell="true" lockavgprice="true" />
 									<add_tradeware object="$TradeStation" ware="ware.spacefuel" allowbuy="true" allowsell="true" lockavgprice="true" />
 								</do_if>
 							</do_if>
 							<debug_to_file name="'TradestationFix'" directory="'DeadAir_Fill'" text="'%1, %2, %3, %4 tradewares'.[$TradeStation.trueowner, $TradeStation.sector.name, $TradeStation.knownname, $TradeStation.tradewares.list.count]" output="false" append="true" />
+						</do_if>
+					</actions>
+				</library>
+				<library name="FixShipyardWharfs">
+					<delay exact="$delaybravo" />
+					<actions>
+						<do_if value="$ShipyardWharf.isoperational">
+							<debug_to_file name="'TradestationFix'" directory="'DeadAir_Fill'" text="'%1, %2, %3 is operational. %4'.[$ShipyardWharf.trueowner, $ShipyardWharf.sector.name, $ShipyardWharf.knownname, $delaybravo]" output="false" append="true" />
+							<do_if value="($ShipyardWharf.tradewares.list.count gt 0)">
+								<debug_to_file name="'TradestationFix'" directory="'DeadAir_Fill'" text="'%1, %2, %3, has tradewares'.[$ShipyardWharf.trueowner, $ShipyardWharf.sector.name, $ShipyardWharf.knownname]" output="false" append="true" />
+								<do_all exact="$ShipyardWharf.tradewares.list.count" counter="$c" reverse="true">
+									<remove_tradeware object="$ShipyardWharf" ware="$ShipyardWharf.tradewares.list.{$c}" />
+								</do_all>
+							</do_if>
+							<debug_to_file name="'TradestationFix'" directory="'DeadAir_Fill'" text="'%1, %2, %3, %4 tradewares'.[$ShipyardWharf.trueowner, $ShipyardWharf.sector.name, $ShipyardWharf.knownname, $ShipyardWharf.tradewares.list.count]" output="false" append="true" />
 						</do_if>
 					</actions>
 				</library>
