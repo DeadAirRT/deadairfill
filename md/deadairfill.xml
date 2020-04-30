@@ -63,15 +63,15 @@
 								
 								<do_if value="$ware == ware.nividium">
 									<do_if value="$waresAmount gt $maxWaresAmount * 0.90">
-										<set_value name="$removeWaresAmount" min="($waresAmount - ($maxWaresAmount * 0.80))i" max="($waresAmount - ($maxWaresAmount * 0.75))i" />
+										<set_value name="$removeWaresAmount" min="($waresAmount - ($maxWaresAmount * 0.65))i" max="($waresAmount - ($maxWaresAmount * 0.60))i" />
 									</do_if>
 								</do_if>
 								<do_else>
 									<do_if value="$waresAmount gt $maxWaresAmount * 0.90">
-										<set_value name="$removeWaresAmount" min="($waresAmount - ($maxWaresAmount * 0.80))i" max="($waresAmount - ($maxWaresAmount * 0.70))i" />
+										<set_value name="$removeWaresAmount" min="($waresAmount - ($maxWaresAmount * 0.65))i" max="($waresAmount - ($maxWaresAmount * 0.60))i" />
 									</do_if>
 									<do_if value="$waresAmount lt $maxWaresAmount * 0.05">
-										<set_value name="$addWaresAmount" exact="(($maxWaresAmount * 0.1) - $waresAmount)i" />
+										<set_value name="$addWaresAmount" exact="(($maxWaresAmount * 0.15) - $waresAmount)i" />
 									</do_if>
 								</do_else>
 								<do_if value="$addWaresAmount gt 0 or $removeWaresAmount gt 0">
@@ -104,9 +104,10 @@
 								<do_if value="$waresAmount gt $maxWaresAmount">
 									<set_value name="$removeWaresAmount" exact="($waresAmount - $maxWaresAmount)i" />
 								</do_if>
-								<do_if value="$waresAmount lt $maxWaresAmount * 0.05">
+								<do_elseif value="$waresAmount lt $maxWaresAmount * 0.05">
 									<set_value name="$addWaresAmount" exact="(($maxWaresAmount * 0.1) - $waresAmount)i" />
-								</do_if>
+								</do_elseif>
+								
 								<do_if value="$addWaresAmount gt 0 or $removeWaresAmount gt 0">
 									<do_if value="$_SingleLog_1 == 0">
 										<!-- single log -->
@@ -114,14 +115,15 @@
 										<debug_to_file name="$Station.knownname" directory="'DeadAir_Fill'" text="'[%2] -- Processing Wharf/Shipyard Cargo of %1'.[$Station.knownname, player.systemtime.{'%Y-%m-%d %H:%M:%S'}]" output="false" append="true" />
 										<set_value name="$_SingleLog_1" exact="1" />
 									</do_if>
+									
 									<do_if value="$addWaresAmount gt 0">
 										<debug_to_file name="$Station.knownname" directory="'DeadAir_Fill'" text="'Adding %2 units of %1'.[$ware.name, $addWaresAmount]" output="false" append="true" />
 										<add_cargo object="$Station" ware="$ware" exact="$addWaresAmount" />
 									</do_if>
-									<do_if value="$removeWaresAmount gt 0">
+									<do_elseif value="$removeWaresAmount gt 0">
 										<debug_to_file name="$Station.knownname" directory="'DeadAir_Fill'" text="'Removing %2 units of %1'.[$ware.name, $removeWaresAmount]" output="false" append="true" />
 										<remove_cargo object="$Station" ware="$ware" exact="$removeWaresAmount" />
-									</do_if>
+									</do_elseif>
 								</do_if>
 							</do_all>
 						  </do_if>
@@ -170,7 +172,7 @@
 									<remove_value name="$TargetTurret" />
 								</do_if>
 							</do_if>
-							<do_if value="$Ship.primarypurpose == purpose.mine">
+							<do_elseif value="$Ship.primarypurpose == purpose.mine">
 								<find_object_component name="$TargetWeapon" class="class.weapon" object="$Ship" multiple="false">
 									<match class="class.turret" negate="true" />
 								</find_object_component>
@@ -191,7 +193,7 @@
 									<set_value name="$ShipModDebug" exact="$ShipModDebug + '//' + $TargetTurret.macro + '=' + 'ware.mod_weapon_mining_01_mk3'" />
 									<remove_value name="$TargetTurret" />
 								</do_if>
-							</do_if>
+							</do_elseif>
 							
 							<!-- OLD
 							<add_equipment_mods object="$Ship">
