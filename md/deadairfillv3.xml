@@ -12,6 +12,8 @@
 				<set_value name="md.$DAFillCheckInterval" exact="30" />
 				<set_value name="md.$DAFillMaxTSWarePercent" exact="90.0" />
 				<set_value name="md.$DAFillMaxTSWarePercentAfter" exact="75.0" />
+				<set_value name="md.$DAFillMaxSYWarePercent" exact="90.0" />
+				<set_value name="md.$DAFillMaxSYWarePercentAfter" exact="75.0" />
 				<set_value name="md.$DAFillMinTSWarePercent" exact="5.0" />
 				<set_value name="md.$DAFillMinTSWarePercentAfter" exact="10.0" />
 				<set_value name="md.$DAFillMinSYWarePercent" exact="5.0" />
@@ -139,8 +141,10 @@
 								<set_value name="$addWaresAmount" exact="0" />
 								<set_value name="$removeWaresAmount" exact="0" />
 								
-								<do_if value="$waresAmount gt $maxWaresAmount">
-									<set_value name="$removeWaresAmount" exact="($waresAmount - $maxWaresAmount)i" />
+								<do_if value="(md.$DAFillMaxSYWarePercent ge md.$DAFillMaxSYWarePercentAfter)">
+									<do_if value="($waresAmount gt $maxWaresAmount * ((md.$DAFillMaxSYWarePercent)f / 100)f)">
+										<set_value name="$removeWaresAmount" exact="($waresAmount - ($maxWaresAmount * ((md.$DAFillMaxSYWarePercentAfter)f / 100)f))i" />
+									</do_if>
 								</do_if>
 								<do_if value="(md.$DAFillMinSYWarePercent le md.$DAFillMinSYWarePercentAfter)">
 									<do_if value="$waresAmount lt $maxWaresAmount * ((md.$DAFillMinSYWarePercent)f / 100)f">
@@ -336,13 +340,56 @@
 							$step=5.0,
 							$suffix='%',
 							]" />
-							
+						
 						<signal_cue_instantly cue="md.Simple_Menu_API.Add_Row" />
 						<signal_cue_instantly cue="md.Simple_Menu_API.Make_Text" param="table[
 							$col=1,
 							$colSpan=2,
 							$mouseOverText= {33232472,108},
 							$text = {33232472,109},
+							]" />
+						<signal_cue_instantly cue="md.Simple_Menu_API.Make_Slider" param="table[
+							$col=3,
+							$colSpan=2,
+							$onSliderCellConfirm=DAFillMaxSYWarePercent,
+							$min=0.0,
+							$minSelect=5.0,
+							$max=100.0,
+							$maxSelect=100.0,
+							$exceedMaxValue=false,
+							$start=md.$DAFillMaxSYWarePercent,
+							$step=5.0,
+							$suffix='%',
+							]" />
+							
+						<signal_cue_instantly cue="md.Simple_Menu_API.Add_Row" />
+						<signal_cue_instantly cue="md.Simple_Menu_API.Make_Text" param="table[
+							$col=1,
+							$colSpan=2,
+							$mouseOverText= {33232472,110},
+							$text = {33232472,111},
+							]" />
+						<signal_cue_instantly cue="md.Simple_Menu_API.Make_Slider" param="table[
+							$col=3,
+							$colSpan=2,
+							$onSliderCellConfirm=DAFillMaxSYWarePercentAfter,
+							$min=0.0,
+							$minSelect=0.0,
+							$max=100.0,
+							$maxSelect=100.0,
+							$exceedMaxValue=false,
+							$start=md.$DAFillMaxSYWarePercentAfter,
+							$step=5.0,
+							$suffix='%',
+							]" />
+							
+
+						<signal_cue_instantly cue="md.Simple_Menu_API.Add_Row" />
+						<signal_cue_instantly cue="md.Simple_Menu_API.Make_Text" param="table[
+							$col=1,
+							$colSpan=2,
+							$mouseOverText= {33232472,112},
+							$text = {33232472,113},
 							]" />
 						<signal_cue_instantly cue="md.Simple_Menu_API.Make_Slider" param="table[
 							$col=3,
@@ -362,8 +409,8 @@
 						<signal_cue_instantly cue="md.Simple_Menu_API.Make_Text" param="table[
 							$col=1,
 							$colSpan=2,
-							$mouseOverText= {33232472,110},
-							$text = {33232472,111},
+							$mouseOverText= {33232472,114},
+							$text = {33232472,115},
 							]" />
 						<signal_cue_instantly cue="md.Simple_Menu_API.Make_Slider" param="table[
 							$col=3,
@@ -383,8 +430,8 @@
 						<signal_cue_instantly cue="md.Simple_Menu_API.Make_Text" param="table[
 							$col=1,
 							$colSpan=2,
-							$mouseOverText= {33232472,112},
-							$text = {33232472,113},
+							$mouseOverText= {33232472,116},
+							$text = {33232472,117},
 							]" />
 						<signal_cue_instantly cue="md.Simple_Menu_API.Make_Slider" param="table[
 							$col=3,
@@ -404,8 +451,8 @@
 						<signal_cue_instantly cue="md.Simple_Menu_API.Make_Text" param="table[
 							$col=1,
 							$colSpan=2,
-							$mouseOverText= {33232472,114},
-							$text = {33232472,115},
+							$mouseOverText= {33232472,118},
+							$text = {33232472,119},
 							]" />
 						<signal_cue_instantly cue="md.Simple_Menu_API.Make_Slider" param="table[
 							$col=3,
@@ -460,6 +507,38 @@
 						<do_if value="md.$DAFillMaxTSWarePercent lt event.param.$value">
 							<set_value name="md.$DAFillMaxTSWarePercent" exact="[event.param.$value + 5.0,100.0].min" />
 							<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillMaxTSWarePercent to %2'.[player.age,md.$DAFillMaxTSWarePercent]" 
+								context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+							<signal_cue_instantly cue="md.Simple_Menu_API.Refresh_Menu"/>
+						</do_if>
+					</actions>
+				</cue>
+				<cue name="DAFillMaxSYWarePercent" instantiate="true">
+					<conditions>
+						<event_cue_signalled />
+					</conditions>
+					<actions>
+						<set_value name="md.$DAFillMaxSYWarePercent" exact="event.param.$value" />
+						<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillMaxSYWarePercent to %2'.[player.age,md.$DAFillMaxSYWarePercent]" 
+							context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+						<do_if value="md.$DAFillMaxSYWarePercentAfter gt event.param.$value">
+							<set_value name="md.$DAFillMaxSYWarePercentAfter" exact="[event.param.$value - 5.0,0.0].max" />
+							<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillMaxSYWarePercentAfter to %2'.[player.age,md.$DAFillMaxSYWarePercentAfter]" 
+								context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+							<signal_cue_instantly cue="md.Simple_Menu_API.Refresh_Menu"/>
+						</do_if>
+					</actions>
+				</cue>
+				<cue name="DAFillMaxSYWarePercentAfter" instantiate="true">
+					<conditions>
+						<event_cue_signalled />
+					</conditions>
+					<actions>
+						<set_value name="md.$DAFillMaxSYWarePercentAfter" exact="event.param.$value" />
+						<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillMaxSYWarePercentAfter to %2'.[player.age,md.$DAFillMaxSYWarePercentAfter]" 
+							context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+						<do_if value="md.$DAFillMaxSYWarePercent lt event.param.$value">
+							<set_value name="md.$DAFillMaxSYWarePercent" exact="[event.param.$value + 5.0,100.0].min" />
+							<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillMaxSYWarePercent to %2'.[player.age,md.$DAFillMaxSYWarePercent]" 
 								context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
 							<signal_cue_instantly cue="md.Simple_Menu_API.Refresh_Menu"/>
 						</do_if>
