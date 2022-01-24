@@ -4,25 +4,25 @@
 		<cue name="Init">
 			<actions>
 				<do_if value="not $FillStationGroup?">
-					<create_group groupname="$FillStationGroup" />
+					<create_group groupname="$FillStationGroup"/>
 				</do_if>
-				<set_value name="$CheckTimeAlpha" exact="[player.age + 15s, 30min].max" />
-				<set_value name="$DelayAlpha" exact="2s" />
+				<set_value name="$CheckTimeAlpha" exact="[player.age + 15s, 30min].max"/>
+				<set_value name="$DelayAlpha" exact="2s"/>
 				<!-- Incorporating SN menu for customization -->
-				<set_value name="md.$DAFillCheckInterval" exact="30" />
-				<set_value name="md.$DAFillMaxTSWarePercent" exact="90.0" />
-				<set_value name="md.$DAFillMaxTSWarePercentAfter" exact="75.0" />
-				<set_value name="md.$DAFillMinTSWarePercent" exact="5.0" />
-				<set_value name="md.$DAFillMinTSWarePercentAfter" exact="10.0" />
-				<set_value name="md.$DAFillMinSYWarePercent" exact="5.0" />
-				<set_value name="md.$DAFillMinSYWarePercentAfter" exact="10.0" />
-				<set_value name="$DAFillDebugChance" exact="false" />
+				<set_value name="md.$DAFillCheckInterval" exact="30"/>
+				<set_value name="md.$DAFillMaxTSWarePercent" exact="90.0"/>
+				<set_value name="md.$DAFillMaxTSWarePercentAfter" exact="75.0"/>
+				<set_value name="md.$DAFillMinTSWarePercent" exact="5.0"/>
+				<set_value name="md.$DAFillMinTSWarePercentAfter" exact="10.0"/>
+				<set_value name="md.$DAFillMinSYWarePercent" exact="5.0"/>
+				<set_value name="md.$DAFillMinSYWarePercentAfter" exact="10.0"/>
+				<set_value name="$DAFillDebugChance" exact="false"/>
 			</actions>
 			<cues>
 				<cue name="Start" instantiate="false" checktime="$CheckTimeAlpha">
 					<actions>
-						<signal_cue_instantly cue="FindFillStations" />
-						<set_value name="$DAFillLastTimeFired" exact="player.age" />
+						<signal_cue_instantly cue="FindFillStations"/>
+						<set_value name="$DAFillLastTimeFired" exact="player.age"/>
 					</actions>
 				</cue>
 				<cue name="Timer" instantiate="true" checkinterval="5min" checktime="$CheckTimeAlpha + 5min">
@@ -31,235 +31,372 @@
 					</conditions>
 					<actions>
 						<set_value name="$DAFillLastTimeFired" exact="player.age"/>
-						<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Signaling FindFillStations -- Next time %2 -- Interval %3'.[player.age,($DAFillLastTimeFired + (md.$DAFillCheckInterval)min),(md.$DAFillCheckInterval)min]" 
-							context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
-						<signal_cue_instantly cue="FindFillStations" />
+						<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Signaling FindFillStations -- Next time %2 -- Interval %3'.[player.age,($DAFillLastTimeFired + (md.$DAFillCheckInterval)min),(md.$DAFillCheckInterval)min]" context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+						<signal_cue_instantly cue="FindFillStations"/>
 					</actions>
 				</cue>
 				<cue name="FindFillStations" instantiate="true">
 					<conditions>
-						<event_cue_signalled />
+						<event_cue_signalled/>
 					</conditions>
 					<actions>
 						<!-- DEBUG CHANCE VALUE -->
-						<set_value name="$DAFillDebugChance" exact="false" />
+						<set_value name="$DAFillDebugChance" exact="false"/>
 						<!-- FIND THE STATIONS -->
 						<find_station groupname="$FillStationGroup" append="true" multiple="true" space="player.galaxy" functional="true" tradestation="true">
-							<match owner="faction.player" negate="true" />
+							<match owner="faction.player" negate="true"/>
 						</find_station>
 						<find_station groupname="$FillStationGroup" append="true" multiple="true" space="player.galaxy" functional="true" shipyard="true">
-							<match owner="faction.player" negate="true" />
+							<match owner="faction.player" negate="true"/>
 						</find_station>
 						<find_station groupname="$FillStationGroup" append="true" multiple="true" space="player.galaxy" functional="true" wharf="true">
-							<match owner="faction.player" negate="true" />
+							<match owner="faction.player" negate="true"/>
 						</find_station>
 						<find_station groupname="$FillStationGroup" append="true" multiple="true" space="player.galaxy" functional="true" canequipships="true">
-							<match_content class="class.buildmodule" />
-							<match owner="faction.player" negate="true" />
+							<match_content class="class.buildmodule"/>
+							<match owner="faction.player" negate="true"/>
 						</find_station>
 						<find_station groupname="$FillStationGroup" append="true" multiple="true" space="player.galaxy" functional="true" piratebase="true">
-							<match owner="faction.player" negate="true" />
+							<match owner="faction.player" negate="true"/>
 						</find_station>
 						<!-- NOTIFY OF STEP -->
-						<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Completed station search and found %2 stations'.[player.age,$FillStationGroup.count]" 
-							context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+						<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Completed station search and found %2 stations'.[player.age,$FillStationGroup.count]" context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
 					</actions>
 					<cues>
 						<cue name="ProcessWaresLoop">
-							<delay exact="$DelayAlpha" />
+							<delay exact="$DelayAlpha"/>
 							<actions>
 								<do_if value="$FillStationGroup.count gt 0">
-									<set_value name="$Station" exact="$FillStationGroup.{1}" />
-									<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Processing %2 in sector %3'.[player.age,$Station.knownname,$Station.sector.knownname]" 
-										context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
-									<include_actions ref="ProcessWares" />
+									<set_value name="$Station" exact="$FillStationGroup.{1}"/>
+									<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Processing %2 in sector %3'.[player.age,$Station.knownname,$Station.sector.knownname]" context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+									<include_actions ref="ProcessWares"/>
 									<remove_from_group group="$FillStationGroup" object="$Station"/>
 									<reset_cue cue="this"/>
 								</do_if>
 								<do_else>
-									<remove_value name="$Station" />
+									<remove_value name="$Station"/>
 								</do_else>
 							</actions>
 						</cue>
 					</cues>
 				</cue>
-				
 				<library name="ProcessWares">
 					<actions>
 						<do_if value="$Station.exists">
-						  <set_value name="$_SingleLog_1" exact="0" />
-						  
-						  <do_if value="$Station.istradestation or $Station.ispiratebase">
-							<do_all exact="$Station.tradewares.list.count" counter="$j">
-								<set_value name="$ware" exact="$Station.tradewares.list.{$j}" />
-								<set_value name="$waresAmount" exact="$Station.cargo.{$ware}.count" />
-								<set_value name="$maxWaresAmount" exact="$Station.cargo.{$ware}.target" />
-								<set_value name="$addWaresAmount" exact="0" />
-								<set_value name="$removeWaresAmount" exact="0" />
-								
-								<do_if value="(md.$DAFillMaxTSWarePercent ge md.$DAFillMaxTSWarePercentAfter)">
-									<do_if value="($waresAmount gt $maxWaresAmount * ((md.$DAFillMaxTSWarePercent)f / 100)f)">
-										<set_value name="$removeWaresAmount" exact="($waresAmount - ($maxWaresAmount * ((md.$DAFillMaxTSWarePercentAfter)f / 100)f))i" />
+							<set_value name="$_SingleLog_1" exact="0"/>
+							<do_if value="$Station.istradestation or $Station.ispiratebase">
+								<do_all exact="$Station.tradewares.list.count" counter="$j">
+									<set_value name="$ware" exact="$Station.tradewares.list.{$j}"/>
+									<set_value name="$waresAmount" exact="$Station.cargo.{$ware}.count"/>
+									<set_value name="$maxWaresAmount" exact="$Station.cargo.{$ware}.target"/>
+									<set_value name="$addWaresAmount" exact="0"/>
+									<set_value name="$removeWaresAmount" exact="0"/>
+									<do_if value="(md.$DAFillMaxTSWarePercent ge md.$DAFillMaxTSWarePercentAfter)">
+										<do_if value="($waresAmount gt $maxWaresAmount * ((md.$DAFillMaxTSWarePercent)f / 100)f)">
+											<set_value name="$removeWaresAmount" exact="($waresAmount - ($maxWaresAmount * ((md.$DAFillMaxTSWarePercentAfter)f / 100)f))i"/>
+										</do_if>
 									</do_if>
-								</do_if>
-								<do_if value="(md.$DAFillMinTSWarePercent le md.$DAFillMinTSWarePercentAfter)">
-									<do_if value="$waresAmount lt $maxWaresAmount * ((md.$DAFillMinTSWarePercent)f / 100)f">
-										<set_value name="$addWaresAmount" exact="(($maxWaresAmount * ((md.$DAFillMinTSWarePercentAfter)f / 100)f) - $waresAmount)i" />
+									<do_if value="(md.$DAFillMinTSWarePercent le md.$DAFillMinTSWarePercentAfter)">
+										<do_if value="$waresAmount lt $maxWaresAmount * ((md.$DAFillMinTSWarePercent)f / 100)f">
+											<set_value name="$addWaresAmount" exact="(($maxWaresAmount * ((md.$DAFillMinTSWarePercentAfter)f / 100)f) - $waresAmount)i"/>
+										</do_if>
 									</do_if>
-								</do_if>
-								
-								<do_if value="$addWaresAmount gt 0 or $removeWaresAmount gt 0">
-									<do_if value="$_SingleLog_1 == 0">
-										<!-- single log -->
-										<debug_to_file name="$Station.knownname" directory="'DeadAir_Fill'" text="' '" output="false" append="true" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
-										<debug_to_file name="$Station.knownname" directory="'DeadAir_Fill'" text="'[%2] -- Processing TradeStation Cargo of %1'.[$Station.knownname, player.systemtime.{'%Y-%m-%d %H:%M:%S'}]" output="false" append="true" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
-										<set_value name="$_SingleLog_1" exact="1" />
+									<do_if value="$addWaresAmount gt 0 or $removeWaresAmount gt 0">
+										<do_if value="$_SingleLog_1 == 0">
+											<!-- single log -->
+											<debug_to_file name="$Station.knownname" directory="'DeadAir_Fill'" text="' '" output="false" append="true" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+											<debug_to_file name="$Station.knownname" directory="'DeadAir_Fill'" text="'[%2] -- Processing TradeStation Cargo of %1'.[$Station.knownname, player.systemtime.{'%Y-%m-%d %H:%M:%S'}]" output="false" append="true" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+											<set_value name="$_SingleLog_1" exact="1"/>
+										</do_if>
+										<do_if value="$addWaresAmount gt 0">
+											<debug_to_file name="$Station.knownname" directory="'DeadAir_Fill'" text="'Adding %2 units of %1'.[$ware.name, $addWaresAmount]" output="false" append="true" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+											<add_cargo object="$Station" ware="$ware" exact="$addWaresAmount"/>
+											<debug_text text="'MOD: DeadAirFillv3 -- %1 -- %2 (%3) -- Adding %4 units of %5'.[player.age,$Station.knownname,$Station.sector.knownname, $addWaresAmount, $ware.name]" context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+										</do_if>
+										<do_if value="$removeWaresAmount gt 0">
+											<debug_to_file name="$Station.knownname" directory="'DeadAir_Fill'" text="'Removing %2 units of %1'.[$ware.name, $removeWaresAmount]" output="false" append="true" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+											<remove_cargo object="$Station" ware="$ware" exact="$removeWaresAmount"/>
+											<debug_text text="'MOD: DeadAirFillv3 -- %1 -- %2 (%3) -- Removing %4 units of %5'.[player.age,$Station.knownname,$Station.sector.knownname, $removeWaresAmount, $ware.name]" context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+											<include_actions ref="AddShipMod"/>
+										</do_if>
 									</do_if>
-									<do_if value="$addWaresAmount gt 0">
-										<debug_to_file name="$Station.knownname" directory="'DeadAir_Fill'" text="'Adding %2 units of %1'.[$ware.name, $addWaresAmount]" output="false" append="true" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
-										<add_cargo object="$Station" ware="$ware" exact="$addWaresAmount" />
-										<debug_text text="'MOD: DeadAirFillv3 -- %1 -- %2 (%3) -- Adding %4 units of %5'.[player.age,$Station.knownname,$Station.sector.knownname, $addWaresAmount, $ware.name]" 
-											context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+								</do_all>
+							</do_if>
+							<do_if value="$Station.canbuildships or $Station.isequipmentdock">
+								<do_all exact="$Station.resources.list.count" counter="$k">
+									<set_value name="$ware" exact="$Station.resources.list.{$k}"/>
+									<set_value name="$waresAmount" exact="$Station.cargo.{$ware}.count"/>
+									<set_value name="$maxWaresAmount" exact="$Station.cargo.{$ware}.target"/>
+									<set_value name="$addWaresAmount" exact="0"/>
+									<set_value name="$removeWaresAmount" exact="0"/>
+									<do_if value="$waresAmount gt $maxWaresAmount">
+										<set_value name="$removeWaresAmount" exact="($waresAmount - $maxWaresAmount)i"/>
 									</do_if>
-									<do_if value="$removeWaresAmount gt 0">
-										<debug_to_file name="$Station.knownname" directory="'DeadAir_Fill'" text="'Removing %2 units of %1'.[$ware.name, $removeWaresAmount]" output="false" append="true" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
-										<remove_cargo object="$Station" ware="$ware" exact="$removeWaresAmount" />
-										<debug_text text="'MOD: DeadAirFillv3 -- %1 -- %2 (%3) -- Removing %4 units of %5'.[player.age,$Station.knownname,$Station.sector.knownname, $removeWaresAmount, $ware.name]" 
-											context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
-										<include_actions ref="AddShipMod" />
+									<do_if value="(md.$DAFillMinSYWarePercent le md.$DAFillMinSYWarePercentAfter)">
+										<do_if value="$waresAmount lt $maxWaresAmount * ((md.$DAFillMinSYWarePercent)f / 100)f">
+											<set_value name="$addWaresAmount" exact="(($maxWaresAmount * ((md.$DAFillMinSYWarePercentAfter)f / 100)f) - $waresAmount)i"/>
+										</do_if>
 									</do_if>
-								</do_if>
-							</do_all>
-						  </do_if>
-						  <do_if value="$Station.canbuildships or $Station.isequipmentdock">
-							<do_all exact="$Station.resources.list.count" counter="$k">
-								<set_value name="$ware" exact="$Station.resources.list.{$k}" />
-								<set_value name="$waresAmount" exact="$Station.cargo.{$ware}.count" />
-								<set_value name="$maxWaresAmount" exact="$Station.cargo.{$ware}.target" />
-								<set_value name="$addWaresAmount" exact="0" />
-								<set_value name="$removeWaresAmount" exact="0" />
-								
-								<do_if value="$waresAmount gt $maxWaresAmount">
-									<set_value name="$removeWaresAmount" exact="($waresAmount - $maxWaresAmount)i" />
-								</do_if>
-								<do_if value="(md.$DAFillMinSYWarePercent le md.$DAFillMinSYWarePercentAfter)">
-									<do_if value="$waresAmount lt $maxWaresAmount * ((md.$DAFillMinSYWarePercent)f / 100)f">
-										<set_value name="$addWaresAmount" exact="(($maxWaresAmount * ((md.$DAFillMinSYWarePercentAfter)f / 100)f) - $waresAmount)i" />
+									<do_if value="$addWaresAmount gt 0 or $removeWaresAmount gt 0">
+										<do_if value="$_SingleLog_1 == 0">
+											<!-- single log -->
+											<debug_to_file name="$Station.knownname" directory="'DeadAir_Fill'" text="' '" output="false" append="true" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+											<debug_to_file name="$Station.knownname" directory="'DeadAir_Fill'" text="'[%2] -- Processing Wharf/Shipyard Cargo of %1'.[$Station.knownname, player.systemtime.{'%Y-%m-%d %H:%M:%S'}]" output="false" append="true" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+											<set_value name="$_SingleLog_1" exact="1"/>
+										</do_if>
+										<do_if value="$addWaresAmount gt 0">
+											<debug_to_file name="$Station.knownname" directory="'DeadAir_Fill'" text="'Adding %2 units of %1'.[$ware.name, $addWaresAmount]" output="false" append="true" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+											<add_cargo object="$Station" ware="$ware" exact="$addWaresAmount"/>
+											<debug_text text="'MOD: DeadAirFillv3 -- %1 -- %2 (%3) -- Adding %4 units of %5'.[player.age,$Station.knownname,$Station.sector.knownname, $addWaresAmount, $ware.name]" context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+										</do_if>
+										<do_elseif value="$removeWaresAmount gt 0">
+											<debug_to_file name="$Station.knownname" directory="'DeadAir_Fill'" text="'Removing %2 units of %1'.[$ware.name, $removeWaresAmount]" output="false" append="true" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+											<remove_cargo object="$Station" ware="$ware" exact="$removeWaresAmount"/>
+											<debug_text text="'MOD: DeadAirFillv3 -- %1 -- %2 (%3) -- Removing %4 units of %5'.[player.age,$Station.knownname,$Station.sector.knownname, $removeWaresAmount, $ware.name]" context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+										</do_elseif>
 									</do_if>
-								</do_if>
-								
-								<do_if value="$addWaresAmount gt 0 or $removeWaresAmount gt 0">
-									<do_if value="$_SingleLog_1 == 0">
-										<!-- single log -->
-										<debug_to_file name="$Station.knownname" directory="'DeadAir_Fill'" text="' '" output="false" append="true" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
-										<debug_to_file name="$Station.knownname" directory="'DeadAir_Fill'" text="'[%2] -- Processing Wharf/Shipyard Cargo of %1'.[$Station.knownname, player.systemtime.{'%Y-%m-%d %H:%M:%S'}]" output="false" append="true" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
-										<set_value name="$_SingleLog_1" exact="1" />
-									</do_if>
-									
-									<do_if value="$addWaresAmount gt 0">
-										<debug_to_file name="$Station.knownname" directory="'DeadAir_Fill'" text="'Adding %2 units of %1'.[$ware.name, $addWaresAmount]" output="false" append="true" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
-										<add_cargo object="$Station" ware="$ware" exact="$addWaresAmount" />
-										<debug_text text="'MOD: DeadAirFillv3 -- %1 -- %2 (%3) -- Adding %4 units of %5'.[player.age,$Station.knownname,$Station.sector.knownname, $addWaresAmount, $ware.name]" 
-											context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
-									</do_if>
-									<do_elseif value="$removeWaresAmount gt 0">
-										<debug_to_file name="$Station.knownname" directory="'DeadAir_Fill'" text="'Removing %2 units of %1'.[$ware.name, $removeWaresAmount]" output="false" append="true" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
-										<remove_cargo object="$Station" ware="$ware" exact="$removeWaresAmount" />
-										<debug_text text="'MOD: DeadAirFillv3 -- %1 -- %2 (%3) -- Removing %4 units of %5'.[player.age,$Station.knownname,$Station.sector.knownname, $removeWaresAmount, $ware.name]" 
-											context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
-									</do_elseif>
-								</do_if>
-							</do_all>
-						  </do_if>
-						  
-						  <remove_value name="$ware" />
-						  <remove_value name="$waresAmount" />
-						  <remove_value name="$maxWaresAmount" />
-						  <remove_value name="$addWaresAmount" />
-						  <remove_value name="$removeWaresAmount" />
+								</do_all>
+							</do_if>
+							<remove_value name="$ware"/>
+							<remove_value name="$waresAmount"/>
+							<remove_value name="$maxWaresAmount"/>
+							<remove_value name="$addWaresAmount"/>
+							<remove_value name="$removeWaresAmount"/>
 						</do_if>
 					</actions>
 				</library>
-				
 				<library name="AddShipMod">
 					<actions>
-						<set_value name="$Owner" exact="$Station.trueowner" />
-						<set_value name="$BaseMods" exact="[ware.mod_shield_capacity_02_mk3, ware.mod_engine_forwardthrust_01_mk3, ware.mod_ship_mass_01_mk3]" />
-						<find_ship name="$Ship" multiple="false" space="player.galaxy" validjobship="true" trueowner="$Owner" functional="true">
-							<match class="[class.ship_l, class.ship_xl]" />
-							<match_any_equipment_mod negate="true" />
-						</find_ship>
-						<do_if value="$Ship.exists">
-							<set_value name="$ShipModDebug" exact="$Owner + '//' + $Ship.knownname + '//' + $Ship.class + '//' + $Ship.typename" />
-							<add_equipment_mods object="$Ship">
-								<mods list="$BaseMods"/>
+						<!-- Faction will get a mod for 1 combat and 1 economy ship each time -->
+						<set_value name="$Owner" exact="$Station.trueowner"/>
+						<set_value name="$HullMods" exact="[ware.mod_ship_mass_AI]"/>
+						<set_value name="$ShieldMods" exact="[ware.mod_shield_capacity_AI]"/>
+						<set_value name="$EngineMods" exact="[ware.mod_engine_forwardthrust_AI]"/>
+						<set_value name="$WeaponMods" exact="[ware.mod_weapon_damage_AI]"/>
+						<set_value name="$MiningWeapons" exact="[macro.weapon_gen_m_mining_01_mk1_macro,macro.weapon_gen_m_mining_01_mk2_macro,macro.weapon_gen_s_mining_01_mk1_macro,macro.weapon_gen_s_mining_01_mk2_macro]"/>
+						<set_value name="$BrokenWeapons" exact="[macro.weapon_arg_l_destroyer_01_mk1_macro,macro.weapon_par_l_destroyer_01_mk1_macro,macro.weapon_tel_l_destroyer_01_mk1_macro,macro.weapon_spl_l_destroyer_01_mk1_macro,macro.weapon_atf_xl_battleship_01_mk1_macro,macro.weapon_ter_l_destroyer_01_mk1_macro,
+																@macro.weapon_spl_l_shell_macro,@macro.weapon_arg_l_ionproj_macro,@macro.weapon_arg_l_fa_centaur_macro,@macro.weapon_arg_l_parray_centaur_macro,@macro.weapon_arg_l_parray_macro,
+																@macro.weapon_par_l_tribeam_macro,@macro.weapon_par_l_parray_macro,@macro.weapon_tel_l_posbeam_macro,@macro.weapon_tel_l_parray_macro,@macro.weapon_gen_m_isr_centaur_macro,@macro.weapon_gen_m_laser_centaur_macro]"/>
+						<find_ship_by_true_owner name="$MilShip" multiple="false" space="player.galaxy" validjobship="true" faction="$Owner" functional="true" docked="false">
+							<match primarypurpose="purpose.fight"/>
+							<match class="[class.ship_l, class.ship_xl]"/>
+							<match_any_equipment_mod negate="true"/>
+						</find_ship_by_true_owner>
+						<find_ship_by_true_owner name="$EcoShip" multiple="false" space="player.galaxy" validjobship="true" faction="$Owner" functional="true" docked="false">
+							<match_any>
+								<match primarypurpose="purpose.trade"/>
+								<match primarypurpose="purpose.build"/>
+								<match primarypurpose="purpose.mine"/>
+							</match_any>
+							<match class="[class.ship_l, class.ship_xl]"/>
+							<match_any_equipment_mod negate="true"/>
+						</find_ship_by_true_owner>
+						<do_if value="$MilShip.exists">
+							<set_value name="$WeaponGroupTags" exact="[]"/>
+							<set_value name="$WeaponMacros" exact="[]"/>
+							<set_value name="$TurretGroupTags" exact="[]"/>
+							<set_value name="$TurretMacros" exact="[]"/>
+							<set_value name="$ShieldGroupTags" exact="[]"/>
+							<set_value name="$ShieldMacros" exact="[]"/>
+							<add_equipment_mods object="$MilShip">
+								<engine ware="ware.mod_engine_forwardthrust_AI"/>
 							</add_equipment_mods>
-							<set_value name="$ShipModDebug" exact="$ShipModDebug + '//' + 'ware.mod_ship_mass_01_mk3' + '//' + 'ware.mod_shield_capacity_02_mk3' + '//' + 'ware.mod_engine_forwardthrust_01_mk3'" />
-							<do_if value="($Ship.primarypurpose == purpose.fight) or ($Ship.primarypurpose == purpose.trade) or ($Ship.primarypurpose == purpose.build)">
-								<find_object_component name="$TargetWeapon" class="class.weapon" object="$Ship" multiple="false">
-									<match class="class.turret" negate="true" />
-								</find_object_component>
-								<do_if value="$TargetWeapon">
-									<add_equipment_mods object="$Ship">
-										<weapon ware="ware.mod_weapon_damage_02_mk3" macro="$TargetWeapon.macro" />
+							<add_equipment_mods object="$MilShip">
+								<ship ware="ware.mod_ship_mass_AI"/>
+							</add_equipment_mods>
+							<do_for_each in="$MilShip.shields.operational.list" name="$Shield">
+								<do_if value="($Shield.grouptag) and (not $ShieldGroupTags.indexof.{$Shield.grouptag})">
+									<add_equipment_mods object="$MilShip">
+										<shield ware="ware.mod_shield_capacity_AI" context="'..'" group="$Shield.grouptag"/>
 									</add_equipment_mods>
-									<set_value name="$ShipModDebug" exact="$ShipModDebug + '//' + $TargetWeapon.macro + '=' + 'ware.mod_weapon_damage_02_mk3'" />
-									<remove_value name="$TargetWeapon" />
+									<append_to_list name="$ShieldGroupTags" exact="$Shield.grouptag"/>
 								</do_if>
-								<find_object_component name="$TargetTurret" class="class.turret" object="$Ship" multiple="false" />
-								<do_if value="$TargetTurret">
-									<add_equipment_mods object="$Ship">
-										<weapon ware="ware.mod_weapon_damage_02_mk3" macro="$TargetTurret.macro" />
+								<!--<do_elseif value="($Shield.macro) and (not $ShieldMacros.indexof.{$Shield.macro})">
+									<add_equipment_mods object="$MilShip">
+										<shield ware="ware.mod_shield_capacity_AI" macro="$Shield.macro"/>
 									</add_equipment_mods>
-									<set_value name="$ShipModDebug" exact="$ShipModDebug + '//' + $TargetTurret.macro + '=' + 'ware.mod_weapon_damage_02_mk3'" />
-									<remove_value name="$TargetTurret" />
-								</do_if>
-							</do_if>
-							<do_elseif value="$Ship.primarypurpose == purpose.mine">
-								<find_object_component name="$TargetWeapon" class="class.weapon" object="$Ship" multiple="false">
-									<match class="class.turret" negate="true" />
-								</find_object_component>
-								<do_if value="$TargetWeapon">
-									<add_equipment_mods object="$Ship">
-										<weapon ware="ware.mod_weapon_mining_01_mk3" macro="$TargetWeapon.macro" />
+									<append_to_list name="$ShieldMacros" exact="$Shield.macro"/>
+								</do_elseif>-->
+							</do_for_each>
+							<do_for_each in="$MilShip.turrets.operational.list" name="$Turret">
+								<do_if value="($Turret.grouptag) and (not $TurretGroupTags.indexof.{$Turret.grouptag})">
+									<add_equipment_mods object="$MilShip">
+										<turret ware="ware.mod_weapon_damage_AI" context="'..'" group="$Turret.grouptag"/>
 									</add_equipment_mods>
-									<set_value name="$ShipModDebug" exact="$ShipModDebug + '//' + $TargetWeapon.macro + '=' + 'ware.mod_weapon_mining_01_mk3'" />
-									<remove_value name="$TargetWeapon" />
+									<append_to_list name="$TurretGroupTags" exact="$Turret.grouptag"/>
 								</do_if>
-								<find_object_component name="$TargetTurret" class="class.turret" object="$Ship" multiple="false">
-									<match macro="[macro.turret_arg_l_mining_01_mk1_macro, macro.turret_arg_m_mining_01_mk1_macro, macro.turret_arg_m_mining_02_mk1_macro, macro.turret_par_l_mining_01_mk1_macro, macro.turret_par_m_mining_01_mk1_macro, macro.turret_par_m_mining_02_mk1_macro, macro.turret_tel_l_mining_01_mk1_macro, macro.turret_tel_m_mining_01_mk1_macro, macro.turret_tel_m_mining_02_mk1_macro]" />
-								</find_object_component>
-								<do_if value="$TargetTurret">
-									<add_equipment_mods object="$Ship">
-										<weapon ware="ware.mod_weapon_mining_01_mk3" macro="$TargetTurret.macro" />
+								<do_elseif value="($Turret.macro) and (not $TurretMacros.indexof.{$Turret.macro})">
+									<add_equipment_mods object="$MilShip">
+										<turret ware="ware.mod_weapon_damage_AI" macro="$Turret.macro"/>
 									</add_equipment_mods>
-									<set_value name="$ShipModDebug" exact="$ShipModDebug + '//' + $TargetTurret.macro + '=' + 'ware.mod_weapon_mining_01_mk3'" />
-									<remove_value name="$TargetTurret" />
+									<append_to_list name="$TurretMacros" exact="$Turret.macro"/>
+								</do_elseif>
+							</do_for_each>
+							<do_for_each in="$MilShip.weapons.operational.list" name="$Weapon">
+								<do_if value="($Weapon.grouptag) and (not $WeaponGroupTags.indexof.{$Weapon.grouptag}) and (not $TurretGroupTags.indexof.{$Weapon.grouptag})">
+									<add_equipment_mods object="$MilShip">
+										<weapon ware="ware.mod_weapon_damage_AI" context="'..'" group="$Weapon.grouptag"/>
+									</add_equipment_mods>
+									<append_to_list name="$WeaponGroupTags" exact="$Weapon.grouptag"/>
 								</do_if>
-							</do_elseif>
-							
-							<!-- OLD
-							<add_equipment_mods object="$Ship">
-								<ship ware="ware.mod_ship_mass_01_mk3" />
-								<engine ware="ware.mod_engine_forwardthrust_01_mk3" />
-								<shield ware="ware.mod_shield_capacity_02_mk3" />
-							</add_equipment_mods> -->
-							<debug_to_file name="'Added Ship Mods'" directory="'DeadAir_Fill'" text="'%1'.[$ShipModDebug]" output="false" append="true" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+								<do_elseif value="($Weapon.macro) and (not $WeaponMacros.indexof.{$Weapon.macro}) and (not $TurretMacros.indexof.{$Weapon.macro}) and (not $BrokenWeapons.indexof.{$Weapon.macro})">
+									<add_equipment_mods object="$MilShip">
+										<weapon ware="ware.mod_weapon_damage_AI" macro="$Weapon.macro"/>
+									</add_equipment_mods>
+									<append_to_list name="$WeaponMacros" exact="$Weapon.macro"/>
+								</do_elseif>
+							</do_for_each>
+							<debug_to_file name="'Added Ship Mods'" directory="'DeadAir_Fill'" text="'%1 // %2 // %3 // %4'.[$MilShip.owner,$MilShip.knownname,$MilShip.class,$MilShip.typename]" output="false" append="true" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+							<remove_value name="$MilShip"/>
+							<remove_value name="$Shield"/>
+							<remove_value name="$Turret"/>
+							<remove_value name="$Weapon"/>
 						</do_if>
-						
-						<remove_value name="$Owner" />
-						<remove_value name="$Ship" />
+						<do_if value="$EcoShip.exists">
+							<set_value name="$WeaponGroupTags" exact="[]"/>
+							<set_value name="$WeaponMacros" exact="[]"/>
+							<set_value name="$TurretGroupTags" exact="[]"/>
+							<set_value name="$TurretMacros" exact="[]"/>
+							<set_value name="$ShieldGroupTags" exact="[]"/>
+							<set_value name="$ShieldMacros" exact="[]"/>
+							<add_equipment_mods object="$EcoShip">
+								<engine ware="ware.mod_engine_forwardthrust_AI"/>
+							</add_equipment_mods>
+							<add_equipment_mods object="$EcoShip">
+								<ship ware="ware.mod_ship_mass_AI"/>
+							</add_equipment_mods>
+							<do_for_each in="$EcoShip.shields.operational.list" name="$Shield">
+								<do_if value="($Shield.grouptag) and (not $ShieldGroupTags.indexof.{$Shield.grouptag})">
+									<add_equipment_mods object="$EcoShip">
+										<shield ware="ware.mod_shield_capacity_AI" context="'..'" group="$Shield.grouptag"/>
+									</add_equipment_mods>
+									<append_to_list name="$ShieldGroupTags" exact="$Shield.grouptag"/>
+								</do_if>
+								<!--<do_elseif value="($Shield.macro) and (not $ShieldMacros.indexof.{$Shield.macro})">
+									<add_equipment_mods object="$EcoShip">
+										<shield ware="ware.mod_shield_capacity_AI" macro="$Shield.macro"/>
+									</add_equipment_mods>
+									<append_to_list name="$ShieldMacros" exact="$Shield.macro"/>
+								</do_elseif>-->
+							</do_for_each>
+							<do_for_each in="$EcoShip.turrets.operational.list" name="$Turret">
+								<do_if value="($Turret.grouptag) and (not $TurretGroupTags.indexof.{$Turret.grouptag})">
+									<add_equipment_mods object="$EcoShip">
+										<turret ware="ware.mod_weapon_damage_AI" context="'..'" group="$Turret.grouptag"/>
+									</add_equipment_mods>
+									<append_to_list name="$TurretGroupTags" exact="$Turret.grouptag"/>
+								</do_if>
+								<do_elseif value="($Turret.macro) and (not $TurretMacros.indexof.{$Turret.macro})">
+									<add_equipment_mods object="$EcoShip">
+										<turret ware="ware.mod_weapon_damage_AI" macro="$Turret.macro"/>
+									</add_equipment_mods>
+									<append_to_list name="$TurretMacros" exact="$Turret.macro"/>
+								</do_elseif>
+							</do_for_each>
+							<do_for_each in="$EcoShip.weapons.operational.list" name="$Weapon">
+								<do_if value="($Weapon.grouptag) and (not $WeaponGroupTags.indexof.{$Weapon.grouptag}) and (not $TurretGroupTags.indexof.{$Weapon.grouptag})">
+									<add_equipment_mods object="$EcoShip">
+										<weapon ware="ware.mod_weapon_damage_AI" context="'..'" group="$Weapon.grouptag"/>
+									</add_equipment_mods>
+									<append_to_list name="$WeaponGroupTags" exact="$Weapon.grouptag"/>
+								</do_if>
+								<do_elseif value="($Weapon.macro) and (not $WeaponMacros.indexof.{$Weapon.macro}) and (not $TurretMacros.indexof.{$Weapon.macro}) and (not $BrokenWeapons.indexof.{$Weapon.macro})">
+									<add_equipment_mods object="$EcoShip">
+										<weapon ware="ware.mod_weapon_damage_AI" macro="$Weapon.macro"/>
+									</add_equipment_mods>
+									<append_to_list name="$WeaponMacros" exact="$Weapon.macro"/>
+								</do_elseif>
+							</do_for_each>
+							<debug_to_file name="'Added Ship Mods'" directory="'DeadAir_Fill'" text="'%1 // %2 // %3 // %4'.[$EcoShip.owner,$EcoShip.knownname,$EcoShip.class,$EcoShip.typename]" output="false" append="true" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+							<remove_value name="$EcoShip"/>
+							<remove_value name="$Shield"/>
+							<remove_value name="$Turret"/>
+							<remove_value name="$Weapon"/>
+						</do_if>
+						<remove_value name="$Owner"/>
 					</actions>
 				</library>
+				<!-- Spamming on weapons and occasionally shields/weapons
+							<add_equipment_mods object="$MilShip">
+								<engine ware="ware.mod_engine_forwardthrust_AI"/>
+							</add_equipment_mods>
+							<add_equipment_mods object="$MilShip">
+								<ship ware="ware.mod_ship_mass_AI"/>
+							</add_equipment_mods>
+							<add_equipment_mods object="$MilShip">
+								<shield ware="ware.mod_shield_capacity_AI"/>
+							</add_equipment_mods>
+							<do_for_each in="$MilShip.weapons.all.list" name="$Weapon">
+								<do_if value="$Weapon.grouptag">
+									<add_equipment_mods object="$MilShip">
+										<weapon ware="ware.mod_weapon_damage_AI" context="'..'" group="$Weapon.grouptag"/>
+									</add_equipment_mods>
+								</do_if>
+								<do_else>
+									<add_equipment_mods object="$MilShip">
+										<weapon ware="ware.mod_weapon_damage_AI" macro="$Weapon.macro"/>
+									</add_equipment_mods>
+								</do_else>
+							</do_for_each>-->
+				<!-- Also causes issues with certain weapons, need to find out how to acquire group context
+							<find_object_component name="$MilShipWeapons" class="class.weapon" object="$MilShip" multiple="true">
+								<match class="class.missileturret" negate="true" />
+								<match class="class.missilelauncher" negate="true" />
+							</find_object_component>
+							<set_value name="$WeaponsMacros" exact="[]"/>
+							<do_if value="$MilShipWeapons.count">
+								<do_all exact="$MilShipWeapons.count" counter="$X">
+									<do_if value="not $WeaponsMacros.indexof.{$MilShipWeapons.{$X}.macro}">
+										<append_to_list name="$WeaponsMacros" exact="$MilShipWeapons.{$X}.macro"/>
+									</do_if>
+								</do_all>
+								<remove_value name="$MilShipWeapons" />
+							</do_if>
+							<do_if value="$WeaponsMacros.count">
+								<do_all exact="$WeaponsMacros.count" counter="$Y">
+									<add_equipment_mods object="$MilShip">
+										<weapon ware="$WeaponMods.random" macro="$WeaponsMacros.{$Y}" />
+									</add_equipment_mods>
+								</do_all>
+							</do_if>
+							<do_if value="$MilShip.maxshield gt 0">
+								<add_equipment_mods object="$MilShip">
+									<shield ware="$ShieldMods.random"/>
+								</add_equipment_mods>
+							</do_if>-->
+				<!-- this code causes errors with shields/weapons
+							<set_value name="$SelectedMods" exact="[$HullMods.random,$ShieldMods.random,$EngineMods.random,$WeaponMods.random]" />
+							<add_equipment_mods object="$MilShip">
+								<mods list="$SelectedMods"/>
+							</add_equipment_mods>-->
+				<!-- This code causes errors occasionally with large weapons
+							<find_object_component name="$TargetWeapon" class="class.weapon" object="$MilShip" multiple="false">
+								<match class="class.turret" negate="true" />
+								<match class="class.missileturret" negate="true" />
+								<match class="class.missilelauncher" negate="true" />
+							</find_object_component>
+							<do_if value="$TargetWeapon">
+								<add_equipment_mods object="$MilShip">
+									<weapon ware="$WeaponMods.random" macro="$TargetWeapon.macro" />
+								</add_equipment_mods>
+								<remove_value name="$TargetWeapon" />
+							</do_if>
+							<find_object_component name="$TargetTurret" class="class.turret" object="$MilShip" multiple="false" />
+							<do_if value="$TargetTurret">
+								<add_equipment_mods object="$MilShip">
+									<weapon ware="$WeaponMods.random" macro="$TargetTurret.macro" />
+								</add_equipment_mods>
+								<remove_value name="$TargetTurret" />
+							</do_if>
+							-->
 				<cue name="Register_Options_Menu" instantiate="true">
 					<conditions>
 						<event_cue_signalled cue="md.Simple_Menu_API.Reloaded"/>
 					</conditions>
 					<actions>
-						<signal_cue_instantly cue="md.Simple_Menu_API.Register_Options_Menu" param = "table[$id = 'deadairfill_options_menu', $columns = 4, $title   = {33232472,101}, $onOpen  = Main_Menu ]"/>
+						<signal_cue_instantly cue="md.Simple_Menu_API.Register_Options_Menu" param="table[$id = 'deadairfill_options_menu', $columns = 4, $title   = {33232472,101}, $onOpen  = Main_Menu ]"/>
 					</actions>
 				</cue>
-				
 				<cue name="Main_Menu" instantiate="true">
 					<conditions>
 						<event_cue_signalled/>
@@ -274,13 +411,13 @@
 						<set_value name="md.$DAFillMinSYWarePercent" exact="5.0" />
 						<set_value name="md.$DAFillMinSYWarePercentAfter" exact="10.0" />
 						-->
-						<signal_cue_instantly cue="md.Simple_Menu_API.Add_Row" />
+						<signal_cue_instantly cue="md.Simple_Menu_API.Add_Row"/>
 						<signal_cue_instantly cue="md.Simple_Menu_API.Make_Text" param="table[
 							$col=1,
 							$colSpan=2,
 							$mouseOverText= {33232472,102},
 							$text = {33232472,103},
-							]" />
+							]"/>
 						<signal_cue_instantly cue="md.Simple_Menu_API.Make_Slider" param="table[
 							$col=3,
 							$colSpan=2,
@@ -293,15 +430,14 @@
 							$start=md.$DAFillCheckInterval,
 							$step=5,
 							$suffix='min',
-							]" />
-							
-						<signal_cue_instantly cue="md.Simple_Menu_API.Add_Row" />
+							]"/>
+						<signal_cue_instantly cue="md.Simple_Menu_API.Add_Row"/>
 						<signal_cue_instantly cue="md.Simple_Menu_API.Make_Text" param="table[
 							$col=1,
 							$colSpan=2,
 							$mouseOverText= {33232472,104},
 							$text = {33232472,105},
-							]" />
+							]"/>
 						<signal_cue_instantly cue="md.Simple_Menu_API.Make_Slider" param="table[
 							$col=3,
 							$colSpan=2,
@@ -314,15 +450,14 @@
 							$start=md.$DAFillMaxTSWarePercent,
 							$step=5.0,
 							$suffix='%',
-							]" />
-							
-						<signal_cue_instantly cue="md.Simple_Menu_API.Add_Row" />
+							]"/>
+						<signal_cue_instantly cue="md.Simple_Menu_API.Add_Row"/>
 						<signal_cue_instantly cue="md.Simple_Menu_API.Make_Text" param="table[
 							$col=1,
 							$colSpan=2,
 							$mouseOverText= {33232472,106},
 							$text = {33232472,107},
-							]" />
+							]"/>
 						<signal_cue_instantly cue="md.Simple_Menu_API.Make_Slider" param="table[
 							$col=3,
 							$colSpan=2,
@@ -335,15 +470,14 @@
 							$start=md.$DAFillMaxTSWarePercentAfter,
 							$step=5.0,
 							$suffix='%',
-							]" />
-							
-						<signal_cue_instantly cue="md.Simple_Menu_API.Add_Row" />
+							]"/>
+						<signal_cue_instantly cue="md.Simple_Menu_API.Add_Row"/>
 						<signal_cue_instantly cue="md.Simple_Menu_API.Make_Text" param="table[
 							$col=1,
 							$colSpan=2,
 							$mouseOverText= {33232472,108},
 							$text = {33232472,109},
-							]" />
+							]"/>
 						<signal_cue_instantly cue="md.Simple_Menu_API.Make_Slider" param="table[
 							$col=3,
 							$colSpan=2,
@@ -356,15 +490,14 @@
 							$start=md.$DAFillMinTSWarePercent,
 							$step=5.0,
 							$suffix='%',
-							]" />
-							
-						<signal_cue_instantly cue="md.Simple_Menu_API.Add_Row" />
+							]"/>
+						<signal_cue_instantly cue="md.Simple_Menu_API.Add_Row"/>
 						<signal_cue_instantly cue="md.Simple_Menu_API.Make_Text" param="table[
 							$col=1,
 							$colSpan=2,
 							$mouseOverText= {33232472,110},
 							$text = {33232472,111},
-							]" />
+							]"/>
 						<signal_cue_instantly cue="md.Simple_Menu_API.Make_Slider" param="table[
 							$col=3,
 							$colSpan=2,
@@ -377,15 +510,14 @@
 							$start=md.$DAFillMinTSWarePercentAfter,
 							$step=5.0,
 							$suffix='%',
-							]" />
-							
-						<signal_cue_instantly cue="md.Simple_Menu_API.Add_Row" />
+							]"/>
+						<signal_cue_instantly cue="md.Simple_Menu_API.Add_Row"/>
 						<signal_cue_instantly cue="md.Simple_Menu_API.Make_Text" param="table[
 							$col=1,
 							$colSpan=2,
 							$mouseOverText= {33232472,112},
 							$text = {33232472,113},
-							]" />
+							]"/>
 						<signal_cue_instantly cue="md.Simple_Menu_API.Make_Slider" param="table[
 							$col=3,
 							$colSpan=2,
@@ -398,15 +530,14 @@
 							$start=md.$DAFillMinSYWarePercent,
 							$step=5.0,
 							$suffix='%',
-							]" />
-							
-						<signal_cue_instantly cue="md.Simple_Menu_API.Add_Row" />
+							]"/>
+						<signal_cue_instantly cue="md.Simple_Menu_API.Add_Row"/>
 						<signal_cue_instantly cue="md.Simple_Menu_API.Make_Text" param="table[
 							$col=1,
 							$colSpan=2,
 							$mouseOverText= {33232472,114},
 							$text = {33232472,115},
-							]" />
+							]"/>
 						<signal_cue_instantly cue="md.Simple_Menu_API.Make_Slider" param="table[
 							$col=3,
 							$colSpan=2,
@@ -419,112 +550,98 @@
 							$start=md.$DAFillMinSYWarePercentAfter,
 							$step=5.0,
 							$suffix='%',
-							]" />
-							
+							]"/>
 					</actions>
 				</cue>
 				<cue name="DAFillCheckInterval" instantiate="true">
 					<conditions>
-						<event_cue_signalled />
+						<event_cue_signalled/>
 					</conditions>
 					<actions>
-						<set_value name="md.$DAFillCheckInterval" exact="event.param.$value" />
-						<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillCheckInterval to %2'.[player.age,md.$DAFillCheckInterval]" 
-							context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+						<set_value name="md.$DAFillCheckInterval" exact="event.param.$value"/>
+						<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillCheckInterval to %2'.[player.age,md.$DAFillCheckInterval]" context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
 					</actions>
 				</cue>
 				<cue name="DAFillMaxTSWarePercent" instantiate="true">
 					<conditions>
-						<event_cue_signalled />
+						<event_cue_signalled/>
 					</conditions>
 					<actions>
-						<set_value name="md.$DAFillMaxTSWarePercent" exact="event.param.$value" />
-						<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillMaxTSWarePercent to %2'.[player.age,md.$DAFillMaxTSWarePercent]" 
-							context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+						<set_value name="md.$DAFillMaxTSWarePercent" exact="event.param.$value"/>
+						<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillMaxTSWarePercent to %2'.[player.age,md.$DAFillMaxTSWarePercent]" context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
 						<do_if value="md.$DAFillMaxTSWarePercentAfter gt event.param.$value">
-							<set_value name="md.$DAFillMaxTSWarePercentAfter" exact="[event.param.$value - 5.0,0.0].max" />
-							<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillMaxTSWarePercentAfter to %2'.[player.age,md.$DAFillMaxTSWarePercentAfter]" 
-								context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+							<set_value name="md.$DAFillMaxTSWarePercentAfter" exact="[event.param.$value - 5.0,0.0].max"/>
+							<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillMaxTSWarePercentAfter to %2'.[player.age,md.$DAFillMaxTSWarePercentAfter]" context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
 							<signal_cue_instantly cue="md.Simple_Menu_API.Refresh_Menu"/>
 						</do_if>
 					</actions>
 				</cue>
 				<cue name="DAFillMaxTSWarePercentAfter" instantiate="true">
 					<conditions>
-						<event_cue_signalled />
+						<event_cue_signalled/>
 					</conditions>
 					<actions>
-						<set_value name="md.$DAFillMaxTSWarePercentAfter" exact="event.param.$value" />
-						<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillMaxTSWarePercentAfter to %2'.[player.age,md.$DAFillMaxTSWarePercentAfter]" 
-							context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+						<set_value name="md.$DAFillMaxTSWarePercentAfter" exact="event.param.$value"/>
+						<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillMaxTSWarePercentAfter to %2'.[player.age,md.$DAFillMaxTSWarePercentAfter]" context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
 						<do_if value="md.$DAFillMaxTSWarePercent lt event.param.$value">
-							<set_value name="md.$DAFillMaxTSWarePercent" exact="[event.param.$value + 5.0,100.0].min" />
-							<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillMaxTSWarePercent to %2'.[player.age,md.$DAFillMaxTSWarePercent]" 
-								context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+							<set_value name="md.$DAFillMaxTSWarePercent" exact="[event.param.$value + 5.0,100.0].min"/>
+							<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillMaxTSWarePercent to %2'.[player.age,md.$DAFillMaxTSWarePercent]" context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
 							<signal_cue_instantly cue="md.Simple_Menu_API.Refresh_Menu"/>
 						</do_if>
 					</actions>
 				</cue>
 				<cue name="DAFillMinTSWarePercent" instantiate="true">
 					<conditions>
-						<event_cue_signalled />
+						<event_cue_signalled/>
 					</conditions>
 					<actions>
-						<set_value name="md.$DAFillMinTSWarePercent" exact="event.param.$value" />
-						<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillMinTSWarePercent to %2'.[player.age,md.$DAFillMinTSWarePercent]" 
-							context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+						<set_value name="md.$DAFillMinTSWarePercent" exact="event.param.$value"/>
+						<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillMinTSWarePercent to %2'.[player.age,md.$DAFillMinTSWarePercent]" context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
 						<do_if value="md.$DAFillMinTSWarePercentAfter lt event.param.$value">
-							<set_value name="md.$DAFillMinTSWarePercentAfter" exact="[event.param.$value + 5.0,100.0].min" />
-							<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillMinTSWarePercentAfter to %2'.[player.age,md.$DAFillMinTSWarePercentAfter]" 
-								context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+							<set_value name="md.$DAFillMinTSWarePercentAfter" exact="[event.param.$value + 5.0,100.0].min"/>
+							<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillMinTSWarePercentAfter to %2'.[player.age,md.$DAFillMinTSWarePercentAfter]" context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
 							<signal_cue_instantly cue="md.Simple_Menu_API.Refresh_Menu"/>
 						</do_if>
 					</actions>
 				</cue>
 				<cue name="DAFillMinTSWarePercentAfter" instantiate="true">
 					<conditions>
-						<event_cue_signalled />
+						<event_cue_signalled/>
 					</conditions>
 					<actions>
-						<set_value name="md.$DAFillMinTSWarePercentAfter" exact="event.param.$value" />
-						<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillMinTSWarePercentAfter to %2'.[player.age,md.$DAFillMinTSWarePercentAfter]" 
-							context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+						<set_value name="md.$DAFillMinTSWarePercentAfter" exact="event.param.$value"/>
+						<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillMinTSWarePercentAfter to %2'.[player.age,md.$DAFillMinTSWarePercentAfter]" context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
 						<do_if value="md.$DAFillMinTSWarePercent gt event.param.$value">
-							<set_value name="md.$DAFillMinTSWarePercent" exact="[event.param.$value - 5.0,0.0].max" />
-							<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillMinTSWarePercent to %2'.[player.age,md.$DAFillMinTSWarePercent]" 
-								context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+							<set_value name="md.$DAFillMinTSWarePercent" exact="[event.param.$value - 5.0,0.0].max"/>
+							<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillMinTSWarePercent to %2'.[player.age,md.$DAFillMinTSWarePercent]" context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
 							<signal_cue_instantly cue="md.Simple_Menu_API.Refresh_Menu"/>
 						</do_if>
 					</actions>
 				</cue>
 				<cue name="DAFillMinSYWarePercent" instantiate="true">
 					<conditions>
-						<event_cue_signalled />
+						<event_cue_signalled/>
 					</conditions>
 					<actions>
-						<set_value name="md.$DAFillMinSYWarePercent" exact="event.param.$value" />
-						<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillMinSYWarePercent to %2'.[player.age,md.$DAFillMinSYWarePercent]" 
-							context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+						<set_value name="md.$DAFillMinSYWarePercent" exact="event.param.$value"/>
+						<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillMinSYWarePercent to %2'.[player.age,md.$DAFillMinSYWarePercent]" context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
 						<do_if value="md.$DAFillMinSYWarePercentAfter lt event.param.$value">
-							<set_value name="md.$DAFillMinSYWarePercentAfter" exact="[event.param.$value + 5.0,100.0].min" />
-							<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillMinSYWarePercentAfter to %2'.[player.age,md.$DAFillMinSYWarePercentAfter]" 
-								context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+							<set_value name="md.$DAFillMinSYWarePercentAfter" exact="[event.param.$value + 5.0,100.0].min"/>
+							<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillMinSYWarePercentAfter to %2'.[player.age,md.$DAFillMinSYWarePercentAfter]" context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
 							<signal_cue_instantly cue="md.Simple_Menu_API.Refresh_Menu"/>
 						</do_if>
 					</actions>
 				</cue>
 				<cue name="DAFillMinSYWarePercentAfter" instantiate="true">
 					<conditions>
-						<event_cue_signalled />
+						<event_cue_signalled/>
 					</conditions>
 					<actions>
-						<set_value name="md.$DAFillMinSYWarePercentAfter" exact="event.param.$value" />
-						<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillMinSYWarePercentAfter to %2'.[player.age,md.$DAFillMinSYWarePercentAfter]" 
-							context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+						<set_value name="md.$DAFillMinSYWarePercentAfter" exact="event.param.$value"/>
+						<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillMinSYWarePercentAfter to %2'.[player.age,md.$DAFillMinSYWarePercentAfter]" context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
 						<do_if value="md.$DAFillMinSYWarePercent gt event.param.$value">
-							<set_value name="md.$DAFillMinSYWarePercent" exact="[event.param.$value - 5.0,0.0].max" />
-							<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillMinSYWarePercent to %2'.[player.age,md.$DAFillMinSYWarePercent]" 
-								context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+							<set_value name="md.$DAFillMinSYWarePercent" exact="[event.param.$value - 5.0,0.0].max"/>
+							<debug_text text="'MOD: DeadAirFillv3 -- %1 -- Updated md.$DAFillMinSYWarePercent to %2'.[player.age,md.$DAFillMinSYWarePercent]" context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
 							<signal_cue_instantly cue="md.Simple_Menu_API.Refresh_Menu"/>
 						</do_if>
 					</actions>
