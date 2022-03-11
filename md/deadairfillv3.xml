@@ -176,7 +176,8 @@
 						<set_value name="$MiningWeapons" exact="[macro.weapon_gen_m_mining_01_mk1_macro,macro.weapon_gen_m_mining_01_mk2_macro,macro.weapon_gen_s_mining_01_mk1_macro,macro.weapon_gen_s_mining_01_mk2_macro]"/>
 						<set_value name="$BrokenWeapons" exact="[macro.weapon_arg_l_destroyer_01_mk1_macro,macro.weapon_par_l_destroyer_01_mk1_macro,macro.weapon_tel_l_destroyer_01_mk1_macro,macro.weapon_spl_l_destroyer_01_mk1_macro,macro.weapon_atf_xl_battleship_01_mk1_macro,macro.weapon_ter_l_destroyer_01_mk1_macro,
 																@macro.weapon_spl_l_shell_macro,@macro.weapon_arg_l_ionproj_macro,@macro.weapon_arg_l_fa_centaur_macro,@macro.weapon_arg_l_parray_centaur_macro,@macro.weapon_arg_l_parray_macro,
-																@macro.weapon_par_l_tribeam_macro,@macro.weapon_par_l_parray_macro,@macro.weapon_tel_l_posbeam_macro,@macro.weapon_tel_l_parray_macro,@macro.weapon_gen_m_isr_centaur_macro,@macro.weapon_gen_m_laser_centaur_macro]"/>
+																@macro.weapon_par_l_tribeam_macro,@macro.weapon_par_l_parray_macro,@macro.weapon_tel_l_posbeam_macro,@macro.weapon_tel_l_parray_macro,@macro.weapon_gen_m_isr_centaur_macro,@macro.weapon_gen_m_laser_centaur_macro,
+																@macro.weapon_ter_l_graviton_macro,@macro.turret_spl_multilauncher_macro]"/>
 						<find_ship_by_true_owner name="$MilShip" multiple="false" space="player.galaxy" validjobship="true" faction="$Owner" functional="true" docked="false">
 							<match primarypurpose="purpose.fight"/>
 							<match class="[class.ship_l, class.ship_xl]"/>
@@ -225,7 +226,7 @@
 									</add_equipment_mods>
 									<append_to_list name="$TurretGroupTags" exact="$Turret.grouptag"/>
 								</do_if>
-								<do_elseif value="($Turret.macro) and (not $TurretMacros.indexof.{$Turret.macro})">
+								<do_elseif value="($Turret.macro) and (not $TurretMacros.indexof.{$Turret.macro}) and (not $BrokenWeapons.indexof.{$Turret.macro})">
 									<add_equipment_mods object="$MilShip">
 										<turret ware="ware.mod_weapon_damage_AI" macro="$Turret.macro"/>
 									</add_equipment_mods>
@@ -286,7 +287,7 @@
 									</add_equipment_mods>
 									<append_to_list name="$TurretGroupTags" exact="$Turret.grouptag"/>
 								</do_if>
-								<do_elseif value="($Turret.macro) and (not $TurretMacros.indexof.{$Turret.macro})">
+								<do_elseif value="($Turret.macro) and (not $TurretMacros.indexof.{$Turret.macro}) and (not $BrokenWeapons.indexof.{$Turret.macro})">
 									<add_equipment_mods object="$EcoShip">
 										<turret ware="ware.mod_weapon_damage_AI" macro="$Turret.macro"/>
 									</add_equipment_mods>
