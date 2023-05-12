@@ -169,15 +169,23 @@
 					<actions>
 						<!-- Faction will get a mod for 1 combat and 1 economy ship each time -->
 						<set_value name="$Owner" exact="$Station.trueowner"/>
-						<set_value name="$HullMods" exact="[ware.mod_ship_mass_AI]"/>
-						<set_value name="$ShieldMods" exact="[ware.mod_shield_capacity_AI]"/>
-						<set_value name="$EngineMods" exact="[ware.mod_engine_forwardthrust_AI]"/>
-						<set_value name="$WeaponMods" exact="[ware.mod_weapon_damage_AI]"/>
-						<set_value name="$MiningWeapons" exact="[macro.weapon_gen_m_mining_01_mk1_macro,macro.weapon_gen_m_mining_01_mk2_macro,macro.weapon_gen_s_mining_01_mk1_macro,macro.weapon_gen_s_mining_01_mk2_macro]"/>
+						<set_value name="$HullMod" exact="[ware.mod_ship_mass_AI,ware.mod_ship_mass_AI_mk2,ware.mod_ship_mass_AI_mk1].random"/>
+						<set_value name="$ShieldMod" exact="[ware.mod_shield_capacity_AI,ware.mod_shield_capacity_AI_mk2,ware.mod_shield_capacity_AI_mk1].random"/>
+						<set_value name="$EngineMod" exact="[ware.mod_engine_forwardthrust_AI,ware.mod_engine_forwardthrust_AI_mk2,ware.mod_engine_forwardthrust_AI_mk1].random"/>
+						<set_value name="$WeaponMod" exact="[ware.mod_weapon_damage_AI,ware.mod_weapon_damage_AI_mk2,ware.mod_weapon_damage_AI_mk1].random"/>
+						<set_value name="$MiningMod" exact="[ware.mod_weapon_mining_AI,ware.mod_weapon_mining_AI_mk2,ware.mod_weapon_mining_AI_mk1].random"/>
+						<set_value name="$MissileMod" exact="[ware.mod_weapon_missile_AI,ware.mod_weapon_missile_AI_mk2,ware.mod_weapon_missile_AI_mk1].random"/>
+						<set_value name="$MiningWeapons" exact="[@macro.turret_arg_l_mining_01_mk1_macro,@macro.turret_arg_m_mining_01_mk1_macro,@macro.turret_arg_m_mining_02_mk1_macro,@macro.turret_par_l_mining_01_mk1_macro,
+							@macro.turret_par_m_mining_01_mk1_macro,@macro.turret_par_m_mining_02_mk1_macro,@macro.turret_tel_l_mining_01_mk1_macro,@macro.turret_tel_m_mining_01_mk1_macro,@macro.turret_tel_m_mining_02_mk1_macro,
+							@macro.weapon_gen_m_mining_01_mk1_macro,@macro.weapon_gen_m_mining_01_mk2_macro,@macro.weapon_gen_s_mining_01_mk1_macro,@macro.weapon_gen_s_mining_01_mk2_macro,@macro.weapon_xen_m_mining_01_mk1_macro,
+							@macro.turret_spl_l_mining_01_mk1_macro,@macro.turret_spl_m_mining_01_mk1_macro,@macro.turret_spl_m_mining_02_mk1_macro,@macro.turret_ter_l_mining_01_mk1_macro,@macro.turret_ter_m_mining_01_mk1_macro,
+							@macro.turret_ter_m_mining_02_mk1_macro]"/>
 						<set_value name="$BrokenWeapons" exact="[macro.weapon_arg_l_destroyer_01_mk1_macro,macro.weapon_par_l_destroyer_01_mk1_macro,macro.weapon_tel_l_destroyer_01_mk1_macro,macro.weapon_spl_l_destroyer_01_mk1_macro,macro.weapon_atf_xl_battleship_01_mk1_macro,macro.weapon_ter_l_destroyer_01_mk1_macro,
-																@macro.weapon_spl_l_shell_macro,@macro.weapon_arg_l_ionproj_macro,@macro.weapon_arg_l_fa_centaur_macro,@macro.weapon_arg_l_parray_centaur_macro,@macro.weapon_arg_l_parray_macro,
-																@macro.weapon_par_l_tribeam_macro,@macro.weapon_par_l_parray_macro,@macro.weapon_tel_l_posbeam_macro,@macro.weapon_tel_l_parray_macro,@macro.weapon_gen_m_isr_centaur_macro,@macro.weapon_gen_m_laser_centaur_macro,
-																@macro.weapon_ter_l_graviton_macro,@macro.turret_spl_multilauncher_macro]"/>
+							@macro.weapon_spl_l_shell_macro,@macro.weapon_arg_l_ionproj_macro,@macro.weapon_arg_l_fa_centaur_macro,@macro.weapon_arg_l_parray_centaur_macro,@macro.weapon_arg_l_parray_macro,
+							@macro.weapon_par_l_tribeam_macro,@macro.weapon_par_l_parray_macro,@macro.weapon_tel_l_posbeam_macro,@macro.weapon_tel_l_parray_macro,@macro.weapon_gen_m_isr_centaur_macro,@macro.weapon_gen_m_laser_centaur_macro,
+							@macro.weapon_ter_l_graviton_macro,@macro.turret_spl_multilauncher_macro,@macro.weapon_dal_l_macro,@macro.weapon_dal_xl_macro,@macro.weapon_dam_l_multifrequency_macro,@macro.weapon_dam_l_radio_macro,@macro.weapon_dam_l_standard_macro,
+							@macro.weapon_dam_xl_macro,@macro.weapon_dga_l_antimatter_macro,@macro.weapon_dga_l_iron_macro,@macro.weapon_dga_l_lead_macro,@macro.weapon_dga_xl_macro,@macro.weapon_dmi_l_fusion_macro,@macro.weapon_dmi_l_nuclear_macro,@macro.weapon_dmi_l_titanium_macro,
+							@macro.weapon_dmi_xl_macro]"/>
 						<find_ship_by_true_owner name="$MilShip" multiple="false" space="player.galaxy" validjobship="true" faction="$Owner" functional="true" docked="false">
 							<match primarypurpose="purpose.fight"/>
 							<match class="[class.ship_l, class.ship_xl]"/>
@@ -195,201 +203,150 @@
 						<do_if value="$MilShip.exists">
 							<set_value name="$WeaponGroupTags" exact="[]"/>
 							<set_value name="$WeaponMacros" exact="[]"/>
-							<set_value name="$TurretGroupTags" exact="[]"/>
-							<set_value name="$TurretMacros" exact="[]"/>
 							<set_value name="$ShieldGroupTags" exact="[]"/>
 							<set_value name="$ShieldMacros" exact="[]"/>
 							<add_equipment_mods object="$MilShip">
-								<engine ware="ware.mod_engine_forwardthrust_AI"/>
+								<engine ware="$EngineMod"/>
 							</add_equipment_mods>
 							<add_equipment_mods object="$MilShip">
-								<ship ware="ware.mod_ship_mass_AI"/>
+								<ship ware="$HullMod"/>
 							</add_equipment_mods>
-							<do_for_each in="$MilShip.shields.operational.list" name="$Shield">
+							<!-- 20220517 changed operational to all; result:-->
+							<!-- 20220517 added grouptag filter to to macro adding portion; result:only L weapons and certain VRO error-->
+							<!-- 20220517 added filter for hasweaponmod == null; result:clean debug except for VRO group 11-->
+							<!-- 20220517 added check for shield mod installed on the object's main hull shield group; result:-->
+							<do_for_each in="$MilShip.shields.all.list" name="$Shield">
 								<do_if value="($Shield.grouptag) and (not $ShieldGroupTags.indexof.{$Shield.grouptag})">
 									<add_equipment_mods object="$MilShip">
-										<shield ware="ware.mod_shield_capacity_AI" context="'..'" group="$Shield.grouptag"/>
+										<shield ware="$ShieldMod" context="'..'" group="$Shield.grouptag"/>
 									</add_equipment_mods>
 									<append_to_list name="$ShieldGroupTags" exact="$Shield.grouptag"/>
 								</do_if>
-								<!--<do_elseif value="($Shield.macro) and (not $ShieldMacros.indexof.{$Shield.macro})">
-									<add_equipment_mods object="$MilShip">
-										<shield ware="ware.mod_shield_capacity_AI" macro="$Shield.macro"/>
-									</add_equipment_mods>
-									<append_to_list name="$ShieldMacros" exact="$Shield.macro"/>
-								</do_elseif>-->
 							</do_for_each>
-							<do_for_each in="$MilShip.turrets.operational.list" name="$Turret">
-								<do_if value="($Turret.grouptag) and (not $TurretGroupTags.indexof.{$Turret.grouptag})">
-									<add_equipment_mods object="$MilShip">
-										<turret ware="ware.mod_weapon_damage_AI" context="'..'" group="$Turret.grouptag"/>
-									</add_equipment_mods>
-									<append_to_list name="$TurretGroupTags" exact="$Turret.grouptag"/>
-								</do_if>
-								<do_elseif value="($Turret.macro) and (not $TurretMacros.indexof.{$Turret.macro}) and (not $BrokenWeapons.indexof.{$Turret.macro})">
-									<add_equipment_mods object="$MilShip">
-										<turret ware="ware.mod_weapon_damage_AI" macro="$Turret.macro"/>
-									</add_equipment_mods>
-									<append_to_list name="$TurretMacros" exact="$Turret.macro"/>
-								</do_elseif>
-							</do_for_each>
-							<do_for_each in="$MilShip.weapons.operational.list" name="$Weapon">
-								<do_if value="($Weapon.grouptag) and (not $WeaponGroupTags.indexof.{$Weapon.grouptag}) and (not $TurretGroupTags.indexof.{$Weapon.grouptag})">
-									<add_equipment_mods object="$MilShip">
-										<weapon ware="ware.mod_weapon_damage_AI" context="'..'" group="$Weapon.grouptag"/>
-									</add_equipment_mods>
+							<do_if value="not $MilShip.hasshieldmod">
+								<add_equipment_mods object="$MilShip">
+									<shield ware="$ShieldMod"/>
+								</add_equipment_mods>
+							</do_if>
+							<do_for_each in="$MilShip.weapons.all.list" name="$Weapon">
+								<do_if value="($Weapon.grouptag) and (not $WeaponGroupTags.indexof.{$Weapon.grouptag})">
+									<do_if value="$Weapon.isclass.[class.missileturret,class.missilelauncher]">
+										<add_equipment_mods object="$MilShip">
+											<weapon ware="$MissileMod" context="'..'" group="$Weapon.grouptag"/>
+										</add_equipment_mods>
+									</do_if>
+									<do_elseif value="$MiningWeapons.indexof.{$Weapon.macro}">
+										<add_equipment_mods object="$MilShip">
+											<weapon ware="$MiningMod" context="'..'" group="$Weapon.grouptag"/>
+										</add_equipment_mods>
+									</do_elseif>
+									<do_else>
+										<add_equipment_mods object="$MilShip">
+											<weapon ware="$WeaponMod" context="'..'" group="$Weapon.grouptag"/>
+										</add_equipment_mods>
+									</do_else>
 									<append_to_list name="$WeaponGroupTags" exact="$Weapon.grouptag"/>
 								</do_if>
-								<do_elseif value="($Weapon.macro) and (not $WeaponMacros.indexof.{$Weapon.macro}) and (not $TurretMacros.indexof.{$Weapon.macro}) and (not $BrokenWeapons.indexof.{$Weapon.macro})">
-									<add_equipment_mods object="$MilShip">
-										<weapon ware="ware.mod_weapon_damage_AI" macro="$Weapon.macro"/>
-									</add_equipment_mods>
+								<do_elseif value="($Weapon.macro) and (not $WeaponMacros.indexof.{$Weapon.macro}) and (not $WeaponGroupTags.indexof.{$Weapon.grouptag})">
+									<do_if value="$Weapon.isclass.[class.missileturret,class.missilelauncher]">
+										<add_equipment_mods object="$MilShip">
+											<weapon ware="$MissileMod" macro="$Weapon.macro"/>
+										</add_equipment_mods>
+									</do_if>
+									<do_elseif value="$MiningWeapons.indexof.{$Weapon.macro}">
+										<add_equipment_mods object="$MilShip">
+											<weapon ware="$MiningMod" macro="$Weapon.macro"/>
+										</add_equipment_mods>
+									</do_elseif>
+									<do_elseif value="not (@$Weapon.hasweaponmod == null)">
+										<add_equipment_mods object="$MilShip">
+											<weapon ware="$WeaponMod" macro="$Weapon.macro"/>
+										</add_equipment_mods>
+									</do_elseif>
+									<do_else>
+										<debug_text text="'MOD: DAFILL -- BROKEN WEAPON -- WEAPON: %1 ; $WeaponMacros.indexof.{$Weapon.macro}: %2 ; GROUPTAG: %3 ; HASWEAPONMOD: %4 ; HASWEAPONMOD.{Weapon} %5'.[@$Weapon.macro,@$WeaponMacros.indexof.{$Weapon.macro},@$Weapon.grouptag,@$Weapon.hasweaponmod,@$Weapon.hasweaponmod.{$WeaponMod}]" context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+									</do_else>
 									<append_to_list name="$WeaponMacros" exact="$Weapon.macro"/>
 								</do_elseif>
 							</do_for_each>
-							<debug_to_file name="'Added Ship Mods'" directory="'DeadAir_Fill'" text="'%1 // %2 // %3 // %4'.[$MilShip.owner,$MilShip.knownname,$MilShip.class,$MilShip.typename]" output="false" append="true" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+							<debug_text text="'MOD: DAFILL -- OWNER: %1 ; IDCODE: %2 ; CLASS: %3 ; TYPENAME: %4'.[$MilShip.owner,$MilShip.idcode,$MilShip.class,$MilShip.typename]" output="false" context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
 							<remove_value name="$MilShip"/>
 							<remove_value name="$Shield"/>
-							<remove_value name="$Turret"/>
 							<remove_value name="$Weapon"/>
 						</do_if>
 						<do_if value="$EcoShip.exists">
 							<set_value name="$WeaponGroupTags" exact="[]"/>
 							<set_value name="$WeaponMacros" exact="[]"/>
-							<set_value name="$TurretGroupTags" exact="[]"/>
-							<set_value name="$TurretMacros" exact="[]"/>
 							<set_value name="$ShieldGroupTags" exact="[]"/>
 							<set_value name="$ShieldMacros" exact="[]"/>
 							<add_equipment_mods object="$EcoShip">
-								<engine ware="ware.mod_engine_forwardthrust_AI"/>
+								<engine ware="$EngineMod"/>
 							</add_equipment_mods>
 							<add_equipment_mods object="$EcoShip">
-								<ship ware="ware.mod_ship_mass_AI"/>
+								<ship ware="$HullMod"/>
 							</add_equipment_mods>
-							<do_for_each in="$EcoShip.shields.operational.list" name="$Shield">
+							<do_for_each in="$EcoShip.shields.all.list" name="$Shield">
 								<do_if value="($Shield.grouptag) and (not $ShieldGroupTags.indexof.{$Shield.grouptag})">
 									<add_equipment_mods object="$EcoShip">
-										<shield ware="ware.mod_shield_capacity_AI" context="'..'" group="$Shield.grouptag"/>
+										<shield ware="$ShieldMod" context="'..'" group="$Shield.grouptag"/>
 									</add_equipment_mods>
 									<append_to_list name="$ShieldGroupTags" exact="$Shield.grouptag"/>
 								</do_if>
-								<!--<do_elseif value="($Shield.macro) and (not $ShieldMacros.indexof.{$Shield.macro})">
-									<add_equipment_mods object="$EcoShip">
-										<shield ware="ware.mod_shield_capacity_AI" macro="$Shield.macro"/>
-									</add_equipment_mods>
-									<append_to_list name="$ShieldMacros" exact="$Shield.macro"/>
-								</do_elseif>-->
 							</do_for_each>
-							<do_for_each in="$EcoShip.turrets.operational.list" name="$Turret">
-								<do_if value="($Turret.grouptag) and (not $TurretGroupTags.indexof.{$Turret.grouptag})">
-									<add_equipment_mods object="$EcoShip">
-										<turret ware="ware.mod_weapon_damage_AI" context="'..'" group="$Turret.grouptag"/>
-									</add_equipment_mods>
-									<append_to_list name="$TurretGroupTags" exact="$Turret.grouptag"/>
-								</do_if>
-								<do_elseif value="($Turret.macro) and (not $TurretMacros.indexof.{$Turret.macro}) and (not $BrokenWeapons.indexof.{$Turret.macro})">
-									<add_equipment_mods object="$EcoShip">
-										<turret ware="ware.mod_weapon_damage_AI" macro="$Turret.macro"/>
-									</add_equipment_mods>
-									<append_to_list name="$TurretMacros" exact="$Turret.macro"/>
-								</do_elseif>
-							</do_for_each>
-							<do_for_each in="$EcoShip.weapons.operational.list" name="$Weapon">
-								<do_if value="($Weapon.grouptag) and (not $WeaponGroupTags.indexof.{$Weapon.grouptag}) and (not $TurretGroupTags.indexof.{$Weapon.grouptag})">
-									<add_equipment_mods object="$EcoShip">
-										<weapon ware="ware.mod_weapon_damage_AI" context="'..'" group="$Weapon.grouptag"/>
-									</add_equipment_mods>
+							<do_if value="not $EcoShip.hasshieldmod">
+								<add_equipment_mods object="$EcoShip">
+									<shield ware="$ShieldMod"/>
+								</add_equipment_mods>
+							</do_if>
+							<do_for_each in="$EcoShip.weapons.all.list" name="$Weapon">
+								<do_if value="($Weapon.grouptag) and (not $WeaponGroupTags.indexof.{$Weapon.grouptag})">
+									<do_if value="$Weapon.isclass.[class.missileturret,class.missilelauncher]">
+										<add_equipment_mods object="$EcoShip">
+											<weapon ware="$MissileMod" context="'..'" group="$Weapon.grouptag"/>
+										</add_equipment_mods>
+									</do_if>
+									<do_elseif value="$MiningWeapons.indexof.{$Weapon.macro}">
+										<add_equipment_mods object="$EcoShip">
+											<weapon ware="$MiningMod" context="'..'" group="$Weapon.grouptag"/>
+										</add_equipment_mods>
+									</do_elseif>
+									<do_else>
+										<add_equipment_mods object="$EcoShip">
+											<weapon ware="$WeaponMod" context="'..'" group="$Weapon.grouptag"/>
+										</add_equipment_mods>
+									</do_else>
 									<append_to_list name="$WeaponGroupTags" exact="$Weapon.grouptag"/>
 								</do_if>
-								<do_elseif value="($Weapon.macro) and (not $WeaponMacros.indexof.{$Weapon.macro}) and (not $TurretMacros.indexof.{$Weapon.macro}) and (not $BrokenWeapons.indexof.{$Weapon.macro})">
-									<add_equipment_mods object="$EcoShip">
-										<weapon ware="ware.mod_weapon_damage_AI" macro="$Weapon.macro"/>
-									</add_equipment_mods>
+								<do_elseif value="($Weapon.macro) and (not $WeaponMacros.indexof.{$Weapon.macro}) and (not $WeaponGroupTags.indexof.{$Weapon.grouptag})">
+									<do_if value="$Weapon.isclass.[class.missileturret,class.missilelauncher]">
+										<add_equipment_mods object="$EcoShip">
+											<weapon ware="$MissileMod" macro="$Weapon.macro"/>
+										</add_equipment_mods>
+									</do_if>
+									<do_elseif value="$MiningWeapons.indexof.{$Weapon.macro}">
+										<add_equipment_mods object="$EcoShip">
+											<weapon ware="$MiningMod" macro="$Weapon.macro"/>
+										</add_equipment_mods>
+									</do_elseif>
+									<do_elseif value="not (@$Weapon.hasweaponmod == null)">
+										<add_equipment_mods object="$EcoShip">
+											<weapon ware="$WeaponMod" macro="$Weapon.macro"/>
+										</add_equipment_mods>
+									</do_elseif>
+									<do_else>
+										<debug_text text="'MOD: DAFILL -- BROKEN WEAPON -- WEAPON: %1 ; $WeaponMacros.indexof.{$Weapon.macro}: %2 ; GROUPTAG: %3 ; HASWEAPONMOD: %4 ; HASWEAPONMOD.{Weapon} %5'.[@$Weapon.macro,@$WeaponMacros.indexof.{$Weapon.macro},@$Weapon.grouptag,@$Weapon.hasweaponmod,@$Weapon.hasweaponmod.{$WeaponMod}]" context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+									</do_else>
 									<append_to_list name="$WeaponMacros" exact="$Weapon.macro"/>
 								</do_elseif>
 							</do_for_each>
-							<debug_to_file name="'Added Ship Mods'" directory="'DeadAir_Fill'" text="'%1 // %2 // %3 // %4'.[$EcoShip.owner,$EcoShip.knownname,$EcoShip.class,$EcoShip.typename]" output="false" append="true" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
+							<debug_text text="'MOD: DAFILL -- OWNER: %1 ; IDCODE: %2 ; CLASS: %3 ; TYPENAME: %4'.[$EcoShip.owner,$EcoShip.idcode,$EcoShip.class,$EcoShip.typename]" output="false" context="false" filter="scripts" chance="if @$DAFillDebugChance then ($DAFillDebugChance * 100) else 0"/>
 							<remove_value name="$EcoShip"/>
 							<remove_value name="$Shield"/>
-							<remove_value name="$Turret"/>
 							<remove_value name="$Weapon"/>
 						</do_if>
 						<remove_value name="$Owner"/>
 					</actions>
 				</library>
-				<!-- Spamming on weapons and occasionally shields/weapons
-							<add_equipment_mods object="$MilShip">
-								<engine ware="ware.mod_engine_forwardthrust_AI"/>
-							</add_equipment_mods>
-							<add_equipment_mods object="$MilShip">
-								<ship ware="ware.mod_ship_mass_AI"/>
-							</add_equipment_mods>
-							<add_equipment_mods object="$MilShip">
-								<shield ware="ware.mod_shield_capacity_AI"/>
-							</add_equipment_mods>
-							<do_for_each in="$MilShip.weapons.all.list" name="$Weapon">
-								<do_if value="$Weapon.grouptag">
-									<add_equipment_mods object="$MilShip">
-										<weapon ware="ware.mod_weapon_damage_AI" context="'..'" group="$Weapon.grouptag"/>
-									</add_equipment_mods>
-								</do_if>
-								<do_else>
-									<add_equipment_mods object="$MilShip">
-										<weapon ware="ware.mod_weapon_damage_AI" macro="$Weapon.macro"/>
-									</add_equipment_mods>
-								</do_else>
-							</do_for_each>-->
-				<!-- Also causes issues with certain weapons, need to find out how to acquire group context
-							<find_object_component name="$MilShipWeapons" class="class.weapon" object="$MilShip" multiple="true">
-								<match class="class.missileturret" negate="true" />
-								<match class="class.missilelauncher" negate="true" />
-							</find_object_component>
-							<set_value name="$WeaponsMacros" exact="[]"/>
-							<do_if value="$MilShipWeapons.count">
-								<do_all exact="$MilShipWeapons.count" counter="$X">
-									<do_if value="not $WeaponsMacros.indexof.{$MilShipWeapons.{$X}.macro}">
-										<append_to_list name="$WeaponsMacros" exact="$MilShipWeapons.{$X}.macro"/>
-									</do_if>
-								</do_all>
-								<remove_value name="$MilShipWeapons" />
-							</do_if>
-							<do_if value="$WeaponsMacros.count">
-								<do_all exact="$WeaponsMacros.count" counter="$Y">
-									<add_equipment_mods object="$MilShip">
-										<weapon ware="$WeaponMods.random" macro="$WeaponsMacros.{$Y}" />
-									</add_equipment_mods>
-								</do_all>
-							</do_if>
-							<do_if value="$MilShip.maxshield gt 0">
-								<add_equipment_mods object="$MilShip">
-									<shield ware="$ShieldMods.random"/>
-								</add_equipment_mods>
-							</do_if>-->
-				<!-- this code causes errors with shields/weapons
-							<set_value name="$SelectedMods" exact="[$HullMods.random,$ShieldMods.random,$EngineMods.random,$WeaponMods.random]" />
-							<add_equipment_mods object="$MilShip">
-								<mods list="$SelectedMods"/>
-							</add_equipment_mods>-->
-				<!-- This code causes errors occasionally with large weapons
-							<find_object_component name="$TargetWeapon" class="class.weapon" object="$MilShip" multiple="false">
-								<match class="class.turret" negate="true" />
-								<match class="class.missileturret" negate="true" />
-								<match class="class.missilelauncher" negate="true" />
-							</find_object_component>
-							<do_if value="$TargetWeapon">
-								<add_equipment_mods object="$MilShip">
-									<weapon ware="$WeaponMods.random" macro="$TargetWeapon.macro" />
-								</add_equipment_mods>
-								<remove_value name="$TargetWeapon" />
-							</do_if>
-							<find_object_component name="$TargetTurret" class="class.turret" object="$MilShip" multiple="false" />
-							<do_if value="$TargetTurret">
-								<add_equipment_mods object="$MilShip">
-									<weapon ware="$WeaponMods.random" macro="$TargetTurret.macro" />
-								</add_equipment_mods>
-								<remove_value name="$TargetTurret" />
-							</do_if>
-							-->
 				<cue name="Register_Options_Menu" instantiate="true">
 					<conditions>
 						<event_cue_signalled cue="md.Simple_Menu_API.Reloaded"/>
